@@ -43,11 +43,11 @@
 # -----------------------------------------------------------------------------------------
 # CMIP6/OMIP Table H1: scalar fields such as tracers, cell mass/volume, sea level, MLD
 # Generally save annuals, and sometimes monthly and daily.
- "ocean_model_z", "volcello",     "volcello",         "ocean_month_z",       "all", "mean", "none",2 # Cell measure for 3d data
- "ocean_model_rho2", "volcello",  "volcello",         "ocean_month_rho2",    "all", "mean", "none",2 # Cell measure for 3d data
- "ocean_model",   "volcello",     "volcello",         "ocean_month",         "all", "mean", "none",2 # Cell measure for 3d data
- "ocean_model",   "pbo",          "pbo",              "ocean_month",         "all", "mean", "none",2
- "ocean_model",   "pso",          "pso",              "ocean_month",         "all", "mean", "none",2
+# "ocean_model_z", "volcello",     "volcello",         "ocean_month_z",       "all", "mean", "none",2 # Cell measure for 3d data
+# "ocean_model_rho2", "volcello",  "volcello",         "ocean_month_rho2",    "all", "mean", "none",2 # Cell measure for 3d data
+# "ocean_model",   "volcello",     "volcello",         "ocean_month",         "all", "mean", "none",2 # Cell measure for 3d data
+# "ocean_model",   "pbo",          "pbo",              "ocean_month",         "all", "mean", "none",2
+# "ocean_model",   "pso",          "pso",              "ocean_month",         "all", "mean", "none",2
 
  "ocean_model",   "thkcello",     "thkcello",         "ocean_month",        "all", "mean", "none",2
  "ocean_model_rho2", "thkcello",  "thkcello",         "ocean_month_rho2",    "all", "mean", "none",2
@@ -55,19 +55,28 @@
  "ocean_model",   "zos",          "zos",              "ocean_month",         "all", "mean", "none",2
  "ocean_model",   "zos",          "zos",              "ocean_daily",         "all", "mean", "none",2
 
- "ocean_model_z", "thetao",       "thetao",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
+# "ocean_model_z", "thetao",       "thetao",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model", "thetao",       "thetao",           "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model",   "tos",          "tos",              "ocean_daily",         "all", "mean", "none",2
  "ocean_model",   "tob",          "tob",              "ocean_month",         "all", "mean", "none",2
 
- "ocean_model_z", "rhopot2",       "rhopot2",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
+# "ocean_model_z", "rhopot2",       "rhopot2",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model", "rhopot2",       "rhopot2",           "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
- 
- "ocean_model_z", "agessc",       "agessc",           "ocean_month_z",      "all", "mean", "none",2
+
+# "ocean_model_z", "agessc",       "agessc",           "ocean_month_z",      "all", "mean", "none",2
  "ocean_model",   "mlotst",       "mlotst",           "ocean_month",         "all", "mean", "none",2
 
  "ocean_model_z","uo",           "uo",               "ocean_month_z",      "all", "mean", "none",2
  "ocean_model_z","vo",           "vo",               "ocean_month_z",      "all", "mean", "none",2
+
+ "ocean_model","uo",           "uo",               "ocean_month",      "all", "mean", "none",2
+ "ocean_model","vo",           "vo",               "ocean_month",      "all", "mean", "none",2
+
+ "ocean_model","umo",       "umo",              "ocean_month",   "all", "mean", "none",2
+ "ocean_model","vmo",       "vmo",              "ocean_month",   "all", "mean", "none",2
+
+ "ocean_model_z","umo",       "umo",              "ocean_month_z",   "all", "mean", "none",2
+ "ocean_model_z","vmo",       "vmo",              "ocean_month_z",   "all", "mean", "none",2
 
  "ocean_model_rho2","umo",       "umo",              "ocean_month_rho2",   "all", "mean", "none",2
  "ocean_model_rho2","vmo",       "vmo",              "ocean_month_rho2",   "all", "mean", "none",2
@@ -81,7 +90,10 @@
  "ocean_model",  "hfds",            "hfds",             "ocean_month",        "all", "mean", "none",2  # total heat entering ocean surface 
  "ocean_model",  "tauuo",        "tauuo",            "ocean_month",        "all", "mean", "none",2
  "ocean_model",  "tauvo",        "tauvo",            "ocean_month",        "all", "mean", "none",2
- 
+
+ "ocean_model", "T_numerical_mixing", "T_numerical_mixing", "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_numerical_mixing", "T_numerical_mixing", "ocean_daily", "all", "mean", "none",2
+
 # Adaptive diagnostics
 #"ocean_model","adapt_w_adjust",     "adapt_w_adjust",     "adapt","all",.false.,"none",2
 #"ocean_model","adapt_disp_density",     "adapt_disp_density",     "adapt","all",.false.,"none",2
