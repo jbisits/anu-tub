@@ -11,3 +11,22 @@ ALE_COORDINATE_CONFIG = "HYBRID:hycom1_75_800m.nc,sigma2,FNC1:1.08,4000,4.5,.01"
 
 ! artificial compressibility to make homogeneous regions appear stratified
 REGRID_COMPRESSIBILITY_FRACTION = 0.01
+
+! state initialisation from previous HYCOM run
+#override THICKNESS_CONFIG = "file"
+#override THICKNESS_FILE = "hycom_initial_conditions.nc"
+#override TS_CONFIG = "file"
+TS_FILE = "hycom_initial_conditions.nc"
+TEMP_IC_VAR = "Temp"
+SALT_IC_VAT = "Salt"
+ 
+! state initialisation from z star restart I have added missing values to
+!INIT_LAYERS_FROM_Z_FILE = TRUE
+!TEMP_SALT_Z_INIT_FILE = "hycom_z_initial_conditions.nc"
+!Z_INIT_FILE_PTEMP_VAR = "Temp"
+!Z_INIT_FILE_SALT_VAR = "Salt"
+!LAYER_Z_INIT_IC_EXTRAP_BUG = False
+!Z_INIT_ALE_REMAPPING = True
+!Z_INIT_REMAP_GENERAL = True
+!Z_INIT_REMAP_FULL_COLUMN = True
+!REMAP_AFTER_INITIALIZATION = False
