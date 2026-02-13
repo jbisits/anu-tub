@@ -161,8 +161,41 @@ Because of the thickness weighting this is a vertical integral.
 function vertical_sum(output_file::AbstractString; timestamps = Colon())
 
     ds = NCDataset(output_file, maskingvalue = NaN)
-    ∫nm = nansum(ds["T_numerical_mixing"], dims = 3)
+    ∫nm = nansum(ds["T_numerical_mixing"][:, :, :, timestamps], dims = 3)
     close(ds)
 
     return mean(∫nm, dims = 4)
 end
+"""
+    function global_integral(output_file::AbstractString; timestamps = Colon())
+Global integral of numerical mixing at each saved timestep.
+"""
+function global_integral(output_file::AbstractString; timestamps = Colon())
+    
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    ∫nm = nansum(ds["T_numerical_mixing"][:, :, :, timestamps], dim = (1, 2, 3))
+    close(ds)
+
+    return ∫nm
+end
+"""
+    function interface_depth(output_file::AbstractString; lonslice = 80, timestamp = 1)
+Find the height of the model interfaces by cumulatively summing the thickness field.
+By default, the slice from the middle of the longitude domain, and the initial timestamp,
+are used. **NOTE:** the returned interfaces are as depths so they are positive.
+"""
+function inteface_depth(output_file::AbstractString; lonslice = 80, timestamp = 1)
+
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    h = ds["thkcello"][80, :, :, timestamp]
+    int_depth = cumsum(h, dims = 2)
+    close(ds)
+    
+    return int_depth
+end
+"""
+    function interface_height(output_file::AbstractString; lonslice = 80, timestamp = 1
+Return the interfeace_height which is the negative depth. This is just a convenience function.
+"""
+interface_height(output_file::AbstractString; lonslice = 80, timestamp = 1) = 
+    -inteface_depth(output_file; lonslice, timestamp)

@@ -6,10 +6,11 @@ using Pkg
 Pkg.activate(".")
 
 # Packages required
-using NCDatasets, CairoMakie, NaNStatistics, Interpolations, Statistics, Dates
+using NCDatasets, CairoMakie, NaNStatistics, Interpolations, Statistics, Dates, Printf
 
 include("plotting_config.jl")
 Revise.includet("plotting_utils.jl")
+Revise.includet("generate_tub_ics.jl")
 
 @info "Plotting and analysis environment setup!"
 
@@ -20,7 +21,7 @@ catalogue = Dict{String, Any}()
 for expt ∈ expts
 
     expt_path = joinpath(pwd(), "anu-tub-nm-" * expt)
-    odir = joinpath(expt_path, "output442")
+    odir = expt == "hycom-PPMH3" ? joinpath(expt_path, "output001") : joinpath(expt_path, "output442")
     daily = joinpath(odir, "ocean_daily.nc")
     monthly = joinpath(odir, "ocean_month.nc")
     monthlyz = joinpath(odir, "ocean_month_z.nc")
