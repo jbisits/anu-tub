@@ -62,6 +62,41 @@ function generate_tub_ics!(ic_filename::AbstractString, monthly_output::Abstract
     close(_ds)
     @info "Initial conditions saved to $(ic_filename)"
     close(ds)
-    
+
+    return nothing
+end
+"""
+    function generate_tubTS_ics!(ic_filename::AbstractString, monthly_output::AbstractString)
+Generate salinity and temperature conditions from the last temperature snapshot in`monthly_output`.
+Salinity is also set but this is constant (35psu).
+These initial conditions are then written to `ic_filename` which **must** have a netcdf file extension.
+"""
+function generate_tubTS_ics!(ic_filename::AbstractString, monthly_output::AbstractString)
+
+    ds = NCDataset(monthly_output, maskingvalue = Float32(NaN))
+    # Get temperature
+    T = ds["thetao"][:, :, :, end]
+    T .*= find_nan
+    replace!(T, 0 => Float32(1.0e20))
+
+    # Create a salinity array that is constant value of 35
+    S = similar(ds["thetao"][:, :, :, end])
+    S .= 35
+    S .*= find_nan
+    replace!(S, 0 => Float32(1.0e20))
+
+    # Save the new initial conditions file   
+    _ds = NCDataset(ic_filename, "c")
+    defVar(_ds, "Temp", T, ("lonh", "lath", "Layer"), fillvalue = Float32(1.0e20), attrib = ds["thetao"].attrib)
+    defVar(_ds, "Salt", S, ("lonh", "lath", "Layer"), fillvalue = Float32(1.0e20), attrib = Dict("long_name" => "Salinity",
+                                                                    "units" => "PPT",
+                                                                    "missing_value" => 1.0e20)
+    )
+    defVar(_ds, "time", [ds["time"][end]], ("time",), attrib = ds["time"].attrib)
+
+    close(_ds)
+    @info "Initial conditions saved to $(ic_filename)"
+    close(ds)
+
     return nothing
 end
