@@ -6,7 +6,8 @@ using Pkg
 Pkg.activate(".")
 
 # Packages required
-using NCDatasets, CairoMakie, NaNStatistics, Interpolations, Statistics, Dates, Printf
+using NCDatasets, CairoMakie, NaNStatistics, Interpolations, Statistics
+using GibbsSeaWater, Dates, Printf
 
 include("plotting_config.jl")
 Revise.includet("plotting_utils.jl")

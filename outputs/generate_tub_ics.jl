@@ -74,8 +74,10 @@ These initial conditions are then written to `ic_filename` which **must** have a
 function generate_tubTS_ics!(ic_filename::AbstractString, monthly_output::AbstractString)
 
     ds = NCDataset(monthly_output, maskingvalue = Float32(NaN))
+    
     # Get temperature
     T = ds["thetao"][:, :, :, end]
+    find_nan = .!isnan.(T) .== true
     T .*= find_nan
     replace!(T, 0 => Float32(1.0e20))
 
@@ -95,7 +97,7 @@ function generate_tubTS_ics!(ic_filename::AbstractString, monthly_output::Abstra
     defVar(_ds, "time", [ds["time"][end]], ("time",), attrib = ds["time"].attrib)
 
     close(_ds)
-    @info "Initial conditions saved to $(ic_filename)"
+    @info "Initial salinity and temperature saved to $(ic_filename)"
     close(ds)
 
     return nothing
