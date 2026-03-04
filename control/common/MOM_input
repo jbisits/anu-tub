@@ -252,13 +252,13 @@ REMAPPING_SCHEME = "PPM_H4"     ! default = "PLM"
                                 ! PPM_IH4     (3rd-order accurate)
                                 ! PQM_IH4IH3  (4th-order accurate)
                                 ! PQM_IH6IH5  (5th-order accurate)
-!THICKNESS_CONFIG = "coord"
+THICKNESS_CONFIG = "coord"
 
 ! === module MOM_grid ===
 ! Parameters providing information about the lateral grid.
 
 ! === module MOM_state_initialization ===
-!TS_CONFIG = "linear"
+TS_CONFIG = "linear"
 T_REF = 10.0
 S_REF = 35.0
 T_TOP = 10

@@ -52,12 +52,14 @@ function generate_tub_ics!(ic_filename::AbstractString, monthly_output::Abstract
             attrib = Dict("long_name" => "Interface Height Relative to Mean Sea Level",
                           "units" => "m", "missing_value" => 1.0e20)
     )
-    defVar(_ds, "Temp", T, ("lonh", "lath", "Layer"), fillvalue = Float32(1.0e20), attrib = ds["thetao"].attrib)
-    defVar(_ds, "Salt", S, ("lonh", "lath", "Layer"), fillvalue = Float32(1.0e20), attrib = Dict("long_name" => "Salinity",
+    defVar(_ds, "PTEMP", T, ("lonh", "lath", "Layer"), fillvalue = Float32(1.0e20), attrib = ds["thetao"].attrib)
+    defVar(_ds, "SALT", S, ("lonh", "lath", "Layer"), fillvalue = Float32(1.0e20), attrib = Dict("long_name" => "Salinity",
                                                                     "units" => "PPT",
                                                                     "missing_value" => 1.0e20)
     )
-    defVar(_ds, "time", [ds["time"][end]], ("time",), attrib = ds["time"].attrib)
+    defVar(_ds, ds["xh"])
+    defVar(_ds, ds["yh"])
+    defVar(_ds, ds["zl"])
 
     close(_ds)
     @info "Initial conditions saved to $(ic_filename)"
@@ -94,7 +96,6 @@ function generate_tubTS_ics!(ic_filename::AbstractString, monthly_output::Abstra
                                                                     "units" => "PPT",
                                                                     "missing_value" => 1.0e20)
     )
-    defVar(_ds, "time", [ds["time"][end]], ("time",), attrib = ds["time"].attrib)
 
     close(_ds)
     @info "Initial salinity and temperature saved to $(ic_filename)"
