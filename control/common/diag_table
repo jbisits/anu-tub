@@ -91,8 +91,8 @@
  "ocean_model",  "tauuo",        "tauuo",            "ocean_month",        "all", "mean", "none",2
  "ocean_model",  "tauvo",        "tauvo",            "ocean_month",        "all", "mean", "none",2
 
- "ocean_model", "T_numerical_mixing", "T_numerical_mixing", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_numerical_mixing", "T_numerical_mixing", "ocean_daily", "all", "mean", "none",2
+ "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_daily", "all", "mean", "none",2
 
  "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month", "all", "mean", "none",2
  "ocean_model", "diabatic_diff_temp_tendency", "diabatic_diff_temp_tendency", "ocean_month", "all", "mean", "none",2

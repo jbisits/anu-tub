@@ -52,7 +52,7 @@
  "ocean_model_z", "thetao",        "thetao",        "ocean_hour_z", "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model",   "thetao",        "thetao",        "ocean_hour", "all", "mean", "none",2  # if use pre-TEOS10
 
- "ocean_model",   "T_numerical_mixing", "T_numerical_mixing", "ocean_hour", "all", "mean", "none",2
+ "ocean_model",   "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_hour", "all", "mean", "none",2
 
  "ocean_model", "T_adx",          "T_adx",          "ocean_hour", "all", "mean", "none",2
  "ocean_model", "T_adx_eu",          "T_adx_eu",          "ocean_hour", "all", "mean", "none",2

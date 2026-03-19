@@ -53,7 +53,7 @@
  "ocean_model_z", "rhopot2",       "rhopot2",         "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model",   "rhopot2",       "rhopot2",         "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
 
- "ocean_model",   "T_numerical_mixing", "T_numerical_mixing", "ocean_month", "all", "mean", "none",2
+ "ocean_model",   "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month", "all", "mean", "none",2
 
 # Adaptive diagnostics
 #"ocean_model","adapt_w_adjust",     "adapt_w_adjust",     "adapt","all",.false.,"none",2
