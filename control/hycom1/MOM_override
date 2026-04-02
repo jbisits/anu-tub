@@ -1,16 +1,22 @@
 ! HyCOM-like coordinate -- regrid to a target density, bounded by a minimum interface depth
 REGRIDDING_COORDINATE_MODE = "HYCOM1"
 
+! DEFAULT
 ! read target densities from file, set minimum interface depth
 ! from profile: minimum dz=1.082, 4000m total thickness, profile is dz^4.5
-ALE_COORDINATE_CONFIG = "HYBRID:hycom1_75_800m.nc,sigma2,FNC1:1.08,4000,4.5,.01"
+! ALE_COORDINATE_CONFIG = "HYBRID:hycom1_75_800m.nc,sigma2,FNC1:1.08,4000,4.5,.01"
 
-! salinity, temperature and thickness initialisation from previous run
+! IMPROVED ISOPYCNAL FOLLOWING IN OCEAN INTERIOR
+! Set constant dz=2m for the target densities in hycom1_75_800m.nc
+ ALE_COORDINATE_CONFIG = "HYBRID:hycom1_dz_2m.nc,sigma2,dz"
 
+#override MAXIMUM_INT_DEPTH_CONFIG = NONE
+#override MAX_LAYER_THICKNESS_CONFIG = NONE
+
+! salinity, temperature and thickness initialisation from saved output of previous runs by Angus and Andy
 !#override TS_CONFIG = "file"
 !TS_FILE = "hycom_initial_conditions.nc"
 
 !#override THICKNESS_CONFIG = "file"
 !THICKNESS_FILE = "hycom_initial_conditions.nc"
 
-#override REGRID_COMPRESSIBILITY_FRACTION = 0.0
