@@ -125,11 +125,11 @@ function zonal_variance_dissipation(output_file::AbstractString;
 
     # take zonal sum and drop dimension when reading in
     ds = NCDataset(output_file, maskingvalue = NaN)
-    nm = nansum(ds["T_numerical_mixing"][:, :, :, timestamps], dims = 1) # °c²ms⁻¹
-    nm ./= nansum(ds["thkcello"][:, :, :, timestamps], dims = 1) # °C²s⁻¹
+    vd = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 1)  # °C²ms⁻¹
+    vd ./= nansum(ds["thkcello"][:, :, :, timestamps], dims = 1)                              # °C²s⁻¹
     close(ds)
 
-    return mean(nm, dims = 4)
+    return mean(vd, dims = 4)
 end
 """
     function zonal_numerical_mixing_diffusivity(output_file::AbstractString; timestamps = Colon())
@@ -161,7 +161,7 @@ Because of the thickness weighting this is a vertical integral.
 function vertical_sum(output_file::AbstractString; timestamps = Colon())
 
     ds = NCDataset(output_file, maskingvalue = NaN)
-    ∫nm = nansum(ds["T_numerical_mixing"][:, :, :, timestamps], dims = 3)
+    ∫nm = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 3)
     close(ds)
 
     return mean(∫nm, dims = 4)
@@ -173,7 +173,7 @@ Global integral of numerical mixing at each saved timestep.
 function global_integral(output_file::AbstractString; timestamps = Colon())
     
     ds = NCDataset(output_file, maskingvalue = NaN)
-    ∫nm = nansum(ds["T_numerical_mixing"][:, :, :, timestamps], dim = (1, 2, 3))
+    ∫nm = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dim = (1, 2, 3))
     close(ds)
 
     return ∫nm

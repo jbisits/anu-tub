@@ -1,5 +1,22 @@
 # Setup up plotting style
 
+"""
+    function latex_format(values)
+Generate latex tick values for a `Colorbar`.
+"""
+function latex_format(values)
+    map(values) do v
+        if v == 0
+            return L"0"
+        else
+            # Extract coefficient and exponent
+            formatted = @sprintf("%.1e", v)
+            coeff, exp = split(formatted, 'e')
+            exponent = parse(Int, exp)
+            return L"%$(coeff) \times 10^{%$(exponent)}"
+        end
+    end
+end
 markersize = 10
 publication_theme = Theme(font="CMU Serif", fontsize = 20,
                           Axis=(titlesize = 22,
