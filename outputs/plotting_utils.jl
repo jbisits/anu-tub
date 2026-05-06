@@ -139,15 +139,48 @@ Calculate the zonal numerical mixing as a diffusivity:
             --------------------
                  (dθ/dz)²               # °C²m⁻²
 """
-function zonal_numerical_mixing_diffusivity(output_file::AbstractString; 
+function zonal_numerical_mixing_diffusivity(output_file::AbstractString, static_file::AbstractString; 
                                             timestamps = Colon())
 
     variance_dissipation = zonal_variance_dissipation(output_file; timestamps)
     interp_vd = 0.5 * (variance_dissipation[:, :, 1:end-1, :] .+ variance_dissipation[:, :, 2:end, :])
-    dθdz = dθ_dz(output_file; timestamps)
-    dθdz .^= 2
+    interp_vd = 0.5 * (interp_vd[:, 1:end-1, :, :] .+ interp_vd[:, 2:end, :, :])
+    
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    θ = ds["thetao"][:, :, :, timestamps]
+    h = ds["thkcello"][:, :, :, timestamps]
+    Δθx = nanmean(θ[1:end-1, :, :, :] .- θ[2:end, :, :, :], dim = 4)
+    Δθy = nanmean(θ[:, 1:end-1, :, :] .- θ[:, 2:end, :, :], dim = 4)
+    Δθz = θ[:, :, 1:end-1, :] .- θ[:, :, 2:end, :]
+    Δθz ./= 0.5 * (h[:, :, 1:end-1, :] .+ h[:, :, 2:end, :])     # dθ/dz
+    Δθz = nanmean(Δθz, dim = 4)
+    close(ds)
+    
+    ds = NCDataset(static_file, maskingvalue = NaN)
+    dx = 0.5 * (ds["dxt"][1:end-1, :] .+ ds["dxt"][2:end, :])
+    dy = 0.5 * (ds["dyt"][:, 1:end-1] .+ ds["dxt"][:, 2:end])
+    close(ds)
+    
+    for k in axes(Δθx, 3)
+        Δθx[:, :, k] ./= dx  # dθ/dx           
+    end
+    Δθx = 0.5*(Δθx[:, 1:end-1, :] .+ Δθx[:, 2:end, :])
+    Δθx = 0.5*(Δθx[:, :, 1:end-1] .+ Δθx[:, :, 2:end])
+    
+    for k in axes(Δθy, 3)
+        Δθy[:, :, k] ./= dy  # dθ/dx           
+    end
+    Δθy = 0.5*(Δθy[1:end-1, :, :] .+ Δθy[2:end, :, :])
+    Δθy = 0.5*(Δθy[:, :, 1:end-1] .+ Δθy[:, :, 2:end])
+    
+    Δθz = 0.5*(Δθz[1:end-1, :, :] .+ Δθz[2:end, :, :])
+    Δθz = 0.5*(Δθz[:, 1:end-1, :] .+ Δθz[:, 2:end, :])
+    
+    ∇θ² = Δθx.^2 .+ Δθy.^2 .+ Δθz.^2
+    ∇θ² = nanmean(∇θ², dim = 1)
+    
 
-    κ_nm = interp_vd ./ dθdz
+    κ_nm = interp_vd[1, :, :] ./ ∇θ²
     replace!(κ_nm, -Inf => NaN)
     replace!(κ_nm, Inf => NaN)
 
