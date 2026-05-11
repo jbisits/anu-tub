@@ -131,24 +131,85 @@ function zonal_variance_dissipation(output_file::AbstractString;
 
     return mean(vd, dims = 4)
 end
+
+"""
+    function depth_variance_dissipation(output_file::AbstractString, timestamps = Colon())
+"""
+function depth_variance_dissipation(output_file::AbstractString; timestamps = Colon())
+    
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    vd = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 3)  # °C²ms⁻¹
+    vd ./= nansum(ds["thkcello"][:, :, :, timestamps], dims = 3)                              # °C²s⁻¹
+    close(ds)
+    
+    return mean(vd, dims = 4)
+end
 """
     function zonal_numerical_mixing_diffusivity(output_file::AbstractString; timestamps = Colon())
 Calculate the zonal numerical mixing as a diffusivity:
 
-            variance dissipation        # °C²s⁻¹
-            --------------------
-                 (dθ/dz)²               # °C²m⁻²
+            zonal mean variance dissipation   # °C²s⁻¹
+            -------------------------------
+                    zonal mean |∇θ|²          # °C²m⁻²
 """
 function zonal_numerical_mixing_diffusivity(output_file::AbstractString, static_file::AbstractString; 
                                             timestamps = Colon())
 
-    # take zonal sum and drop dimension when reading in
     ds = NCDataset(output_file, maskingvalue = NaN)
     vd = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 1)  # °C²ms⁻¹
     vd ./= nansum(ds["thkcello"][:, :, :, timestamps], dims = 1)                              # °C²s⁻¹
     close(ds)
-    interp_vd = 0.5 * (vd[:, :, 1:end-1, :] .+ vd[:, :, 2:end, :])
+    
+    interp_vd = nanmean(vd, dim = 1)
+    interp_vd = 0.5 * (interp_vd[:, 1:end-1, :] .+ interp_vd[:, 2:end, :])
+    interp_vd = 0.5 * (interp_vd[1:end-1, :, :] .+ interp_vd[2:end, :, :])
+    
+    ∇θ² = abs_temperature_gradient(output_file, static_file; timestamps)
+    ∇θ² = nanmean(∇θ², dim = 1)
+
+    κ_nm = interp_vd ./ ∇θ²
+    replace!(κ_nm, -Inf => NaN)
+    replace!(κ_nm, Inf => NaN)
+
+    return mean(κ_nm, dims = 3)[:, :, 1]
+end
+"""
+    function depth_numerical_mixing(output_file::AbstractString, static_file::AbstractString; 
+                                   timestamps = Colon())
+Caclulate the depth integrated numerical mixing as diffusivity:
+
+            depth mean variance dissipation   # °C²s⁻¹
+            -------------------------------
+                    depth mean |∇θ|²          # °C²m⁻²
+
+"""
+function depth_numerical_mixing_diffusivity(output_file::AbstractString, static_file::AbstractString; 
+                                            timestamps = Colon())
+    
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    vd = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 3)  # °C²ms⁻¹
+    vd ./= nansum(ds["thkcello"][:, :, :, timestamps], dims = 3)                              # °C²s⁻¹
+    close(ds)
+    interp_vd = 0.5 * (vd[1:end-1, :, :, :] .+ vd[2:end, :, :, :])
     interp_vd = 0.5 * (interp_vd[:, 1:end-1, :, :] .+ interp_vd[:, 2:end, :, :])
+    interp_vd = nanmean(interp_vd, dim = 3)
+    
+    ∇θ² = abs_temperature_gradient(output_file, static_file; timestamps)
+    ∇θ² = nanmean(∇θ², dim = 3)
+    
+    κ_nm = interp_vd ./ ∇θ²
+    replace!(κ_nm, -Inf => NaN)
+    replace!(κ_nm, Inf => NaN)
+
+    return mean(κ_nm, dims = 3)[:, :, 1]
+end
+"""
+    function abs_temperature_gradient(output_file::AbstractString, static_file::AbstractString; 
+                                     timestamps = Colon())
+Return the squared norm of the temperature gradient at each grid cell.
+"""
+function abs_temperature_gradient(output_file::AbstractString, static_file::AbstractString; 
+                                 timestamps = Colon())
     
     ds = NCDataset(output_file, maskingvalue = NaN)
     θ = ds["thetao"][:, :, :, timestamps]
@@ -186,14 +247,7 @@ function zonal_numerical_mixing_diffusivity(output_file::AbstractString, static_
     Δθz = 0.5*(Δθz[1:end-1, :, :, :] .+ Δθz[2:end, :, :, :])
     Δθz = 0.5*(Δθz[:, 1:end-1, :, :] .+ Δθz[:, 2:end, :, :])
     
-    ∇θ² = Δθx.^2 .+ Δθy.^2 .+ Δθz.^2
-    ∇θ² = nanmean(∇θ², dim = 1)
-
-    κ_nm = interp_vd[1, :, :, :] ./ ∇θ²
-    replace!(κ_nm, -Inf => NaN)
-    replace!(κ_nm, Inf => NaN)
-
-    return mean(κ_nm, dims = 3)[:, :, 1]
+    return Δθx.^2 .+ Δθy.^2 .+ Δθz.^2
 end
 """
     function vertical_sum(output_file::AbstractString; timestamps = Colon())
