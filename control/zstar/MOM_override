@@ -5,9 +5,9 @@ ALE_COORDINATE_CONFIG = "FNC1:2,4000,4.5,.01"
 ! thickness initialisation from a run of Andy and Angus. Pickup time is year 500.
 ! NOTE: only use this to run for one month, to generate a new restart file in
 ! each experiment then pickup from that.
-!#override TS_CONFIG = "file"
-!TS_FILE = "hycom_initial_conditions.nc"
+#override TS_CONFIG = "file"
+TS_FILE = "hycom_initial_conditions.nc"
 
-!#override THICKNESS_CONFIG = "file"
-!THICKNESS_FILE = "hycom_initial_conditions.nc"
+#override THICKNESS_CONFIG = "file"
+THICKNESS_FILE = "hycom_initial_conditions.nc"
 
