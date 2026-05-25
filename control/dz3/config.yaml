@@ -1,0 +1,29 @@
+ncpus: 240
+walltime: 12:00:00
+jobname: tub-dz3
+project: e14
+queue: normal
+
+model: mom6
+shortpath: /scratch/e14
+exe: /scratch/e14/jb2381/mom6-ninja-nci-nm/ocean_only_symmetric/MOM6-nm
+input: /g/data/e14/jb2381/anu-tub/input/anu-tub
+
+storage:
+  gdata:
+    - x77
+    - e14
+  scratch:
+    - e14
+
+collate: False
+
+mpi:
+  module: openmpi/4.1.7
+  flags:  
+    - -mca coll ^ucc
+
+qsub_flags: -W umask=027
+restart_freq: 1  # use tidy_restarts.py instead
+userscripts:
+   archive: qsub sync_output_to_gdata.sh

@@ -1,5 +1,9 @@
-REGRIDDING_COORDINATE_MODE = "ZSTAR" ! default = "LAYER"
-ALE_COORDINATE_CONFIG = "FNC1:2,4000,4.5,.01"
+! HyCOM-like coordinate -- regrid to a target density, bounded by a minimum interface depth
+REGRIDDING_COORDINATE_MODE = "HYCOM1"
+
+! IMPROVED ISOPYCNAL FOLLOWING IN OCEAN INTERIOR
+! Set constant dz=3m for the target densities in hycom1_75_800m.nc
+ ALE_COORDINATE_CONFIG = "HYBRID:hycom1_dz_3.0m.nc,sigma2,dz"
 
 ! Initial conditions, used to initialise all runs with salinity, temperature and
 ! thickness initialisation from a run of Andy and Angus. Pickup time is year 500.
@@ -10,4 +14,3 @@ ALE_COORDINATE_CONFIG = "FNC1:2,4000,4.5,.01"
 
 !#override THICKNESS_CONFIG = "file"
 !THICKNESS_FILE = "hycom_initial_conditions.nc"
-
