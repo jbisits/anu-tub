@@ -15,8 +15,8 @@ Revise.includet("generate_tub_ics.jl")
 
 @info "Plotting and analysis environment setup!"
 
-expts = ("zstar-PPMH3", "hycom-default-PPMH3", "hycom-dz3-PPMH3")
-output_dir = ("output445", "output004", "output005")
+expts = ("zstar", "hycom", "dz3")
+output_dir = ("output002", "output002", "output002")
 
 catalogue = Dict{String, Any}()
 
