@@ -74,17 +74,17 @@ REENTRANT_X = True              !   [Boolean] default = True
                                 ! If true, the domain is zonally reentrant.
 REENTRANT_Y = False             !   [Boolean] default = False
                                 ! If true, the domain is meridionally reentrant.
-NIGLOBAL = 160                  !
+NIGLOBAL = 40                  !
                                 ! The total number of thickness grid points in the
                                 ! x-direction in the physical domain. With STATIC_MEMORY_
                                 ! this is set in MOM_memory.h at compile time.
-NJGLOBAL = 800                  !
+NJGLOBAL = 200                  !
                                 ! The total number of thickness grid points in the
                                 ! y-direction in the physical domain. With STATIC_MEMORY_
                                 ! this is set in MOM_memory.h at compile time.
 
-NIPROC = 6
-NJPROC = 40
+NIPROC = 2
+NJPROC = 20
 
 ! === module MOM_hor_index ===
 ! Sets the horizontal array index types.
@@ -160,7 +160,7 @@ TOPO_CONFIG = "file"            !
                                 !     Phillips - ACC-like idealized topography used in the Phillips config.
                                 !     dense - Denmark Strait-like dense water formation and overflow.
                                 !     USER - call a user modified routine.
-TOPO_FILE = "topog.nc"         ! default = "topog.nc"
+TOPO_FILE = "one_degree_topog.nc"         ! default = "topog.nc"
                                 ! The file from which the bathymetry is read.
 TOPO_VARNAME = "topog"
 MAXIMUM_DEPTH = 4000.0          !   [m]
@@ -703,23 +703,23 @@ MAXTRUNC = 100000               !   [truncations save_interval-1] default = 0
 ! === module MOM_file_parser ===
 BUOY_CONFIG = "file"
 ARCHAIC_OMIP_FORCING_FILE = False
-LONGWAVE_FILE = "forcing.nc"        ! longwave heat flux, "LW"
-SHORTWAVE_FILE = "forcing.nc"       ! shortwave heat flux, "SW"
-EVAPORATION_FILE = "forcing.nc"     ! evaporative flux, "evap"
-LATENTHEAT_FILE = "forcing.nc"      ! latent heat flux, "latent"
-SENSIBLEHEAT_FILE = "forcing.nc"    ! sensible heat flux, "sensible"
-RAIN_FILE = "forcing.nc"            ! liquid precip, "liq_precip"
-SNOW_FILE = "forcing.nc"            ! frozen precip, "froz_precip"
-RUNOFF_FILE = "forcing.nc"          ! runoff, "liq_runoff" and "froz_runoff"
+LONGWAVE_FILE = "one_degree_forcing.nc"        ! longwave heat flux, "LW"
+SHORTWAVE_FILE = "one_degree_forcing.nc"       ! shortwave heat flux, "SW"
+EVAPORATION_FILE = "one_degree_forcing.nc"     ! evaporative flux, "evap"
+LATENTHEAT_FILE = "one_degree_forcing.nc"      ! latent heat flux, "latent"
+SENSIBLEHEAT_FILE = "one_degree_forcing.nc"    ! sensible heat flux, "sensible"
+RAIN_FILE = "one_degree_forcing.nc"            ! liquid precip, "liq_precip"
+SNOW_FILE = "one_degree_forcing.nc"            ! frozen precip, "froz_precip"
+RUNOFF_FILE = "one_degree_forcing.nc"          ! runoff, "liq_runoff" and "froz_runoff"
 
 RESTOREBUOY = True
 FLUXCONST = 0.2
 FLUXCONST_S = 0.0 ! disable surface salinity restoring
-SSTRESTORE_FILE = "sst.nc"      ! SST restoring, "SST"
-SALINITYRESTORE_FILE = "forcing.nc" ! SSS restoring, "SSS"
+SSTRESTORE_FILE = "one_degree_sst.nc"      ! SST restoring, "SST"
+SALINITYRESTORE_FILE = "one_degree_forcing.nc" ! SSS restoring, "SSS"
 
 WIND_CONFIG = "file"
-WIND_FILE = "forcing.nc"
+WIND_FILE = "one_degree_forcing.nc"
 WINDSTRESS_X_VAR = "tau_x"
 WINDSTRESS_Y_VAR = "tau_y"
 
