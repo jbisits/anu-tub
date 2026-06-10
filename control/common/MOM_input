@@ -408,7 +408,7 @@ MASS_WEIGHT_IN_PRESSURE_GRADIENT = True !   [Boolean] default = False
                                 ! top/bottom integrals in AFV pressure gradient calculation.
 
 ! === module MOM_hor_visc ===
-LAPLACIAN = False                !   [Boolean] default = False
+LAPLACIAN = True                !   [Boolean] default = False
                                 ! If true, use a Laplacian horizontal viscosity.
 BIHARMONIC = True               !   [Boolean] default = True
                                 ! If true, use a biharmonic horizontal viscosity. BIHARMONIC may be used with
