@@ -82,6 +82,9 @@
  "ocean_model",  "tauuo",        "tauuo",            "ocean_month",        "all", "mean", "none",2
  "ocean_model",  "tauvo",        "tauvo",            "ocean_month",        "all", "mean", "none",2
  
+ "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month", "all", "mean", "none",2
+ "ocean_model_z", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month_z", "all", "mean", "none",2
+
 # Adaptive diagnostics
 #"ocean_model","adapt_w_adjust",     "adapt_w_adjust",     "adapt","all",.false.,"none",2
 #"ocean_model","adapt_disp_density",     "adapt_disp_density",     "adapt","all",.false.,"none",2
