@@ -1,13 +1,13 @@
 ncpus: 40
-walltime: 36:00:00
-jobname: tub-zstar
+walltime: 12:00:00
+jobname: one-deg-tub-zstar
 project: e14
 queue: normal
 
 model: mom6
 shortpath: /scratch/e14
 # exe: /scratch/e14/jb2381/mom6-ninja-nci-nm/ocean_only_symmetric/MOM6-nm
-exe: /g/data/vk83/prerelease/apps/spack/1.1/release/linux-x86_64_v4/access-mom6-git.9b1dd0431d1eeb77af730251fbf847a80d89817c_2026.05.000-nonffw4xsdlmbqxhnd4d3mqpwx33xldn/bin/mom6-solo
+exe: /g/data/vk83/prerelease/apps/spack/1.1/release/linux-x86_64_v4/access-mom6-git.9b1dd0431d1eeb77af730251fbf847a80d89817c_2026.05.000-nonffw4xsdlmbqxhnd4d3mqpwx33xldn/bin/mom6-solo # the prerelease of my MOM6 build on ACCESS-NRI
 input: /g/data/e14/jb2381/one-degree-anu-tub/input/anu-tub
 
 storage:
