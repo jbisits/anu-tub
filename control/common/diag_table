@@ -98,14 +98,20 @@
  "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month", "all", "mean", "none",2
  "ocean_model", "diabatic_diff_temp_tendency", "diabatic_diff_temp_tendency", "ocean_month", "all", "mean", "none",2
  "ocean_model", "T_dfxy_conc_tendency", "T_dfxy_conc_tendency", "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_advection_xy", "T_advection_xy", "ocean_month", "all", "mean", "none",2
  "ocean_model", "T_tendency_vert_remap", "T_tendency_vert_remap", "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_tendency", "T_tendency", "ocean_month", "all", "mean", "none",2
  "ocean_model", "T_vardec", "T_vardec", "ocean_month", "all", "mean", "none",2
+ "ocean_model", "tosq", "tosq", "ocean_month", "all", "mean", "none",2
 
- "ocean_model_z", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month_z", "all", "mean", "none",2
- "ocean_model_z", "diabatic_diff_temp_tendency",    "diabatic_diff_temp_tendency",    "ocean_month_z", "all", "mean", "none",2
- "ocean_model_z", "T_dfxy_conc_tendency",           "T_dfxy_conc_tendency",           "ocean_month_z", "all", "mean", "none",2
- "ocean_model_z", "T_tendency_vert_remap",          "T_tendency_vert_remap",          "ocean_month_z", "all", "mean", "none",2
- "ocean_model_z", "T_vardec",                       "T_vardec",                       "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "diabatic_diff_temp_tendency",    "diabatic_diff_temp_tendency",    "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "T_dfxy_conc_tendency",           "T_dfxy_conc_tendency",           "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "T_advection_xy", "T_advection_xy", "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "T_tendency_vert_remap",          "T_tendency_vert_remap",          "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "T_tendency", "T_tendency", "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "T_vardec",                       "T_vardec",                       "ocean_month_z", "all", "mean", "none",2
+# "ocean_model_z", "tosq", "tosq", "ocean_month_z", "all", "mean", "none",2
 
 # Adaptive diagnostics
 #"ocean_model","adapt_w_adjust",     "adapt_w_adjust",     "adapt","all",.false.,"none",2

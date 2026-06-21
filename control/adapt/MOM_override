@@ -17,3 +17,14 @@ REGRID_FILTER_SHALLOW_DEPTH = 20.0
 ! between the two regions there is a cubic profile
 ! for the restoring timescale
 REGRID_FILTER_DEEP_DEPTH = 100.0
+
+! Initial conditions, used to initialise all runs with salinity, temperature and
+! thickness initialisation from a run of Andy and Angus. Pickup time is year 500.
+! NOTE: only use this to run for one month, to generate a new restart file in
+! each experiment then pickup from that.
+#override TS_CONFIG = "file"
+TS_FILE = "hycom_initial_conditions.nc"
+
+#override THICKNESS_CONFIG = "file"
+THICKNESS_FILE = "hycom_initial_conditions.nc"
+
