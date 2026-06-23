@@ -1,27 +1,30 @@
-ncpus: 240
-walltime: 12:00:00
-jobname: tub-ag
-project: x77
+ncpus: 40
+walltime: 24:00:00
+jobname: one-deg-tub-ag
+project: e14
 queue: normal
 
 model: mom6
-shortpath: /scratch/x77
-exe: /g/data/x77/ahg157/exes/MOM6/AG-774f4402
-input: /g/data/x77/amh157/mom6/input/anu-tub
+shortpath: /scratch/e14
+exe: /scratch/e14/jb2381/mom6-ninja-nci-nm/ocean_only_symmetric/MOM6-ag-nm
+# exe: /g/data/vk83/prerelease/apps/spack/1.1/release/linux-x86_64_v4/access-mom6-git.9b1dd0431d1eeb77af730251fbf847a80d89817c_2026.05.000-nonffw4xsdlmbqxhnd4d3mqpwx33xldn/bin/mom6-solo
+input: /g/data/e14/jb2381/one-degree-anu-tub/input/anu-tub/
 
 storage:
   gdata:
     - x77
+    - e14
+  scratch:
+    - e14
 
 collate: False
 
 mpi:
-    module: openmpi/4.1.2
+  module: openmpi/4.1.7
+  flags:  
+    - -mca coll ^ucc
 
 qsub_flags: -W umask=027
-
 restart_freq: 1  # use tidy_restarts.py instead
-
-userscripts:
-   archive: qsub sync_output_to_gdata.sh
-
+# userscripts:
+#    archive: qsub sync_output_to_gdata.sh
