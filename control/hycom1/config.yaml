@@ -1,8 +1,8 @@
-ncpus: 40
+queue: normal
+ncpus: 48
 walltime: 24:00:00
 jobname: one-deg-tub-hycom
 project: e14
-queue: normal
 
 model: mom6
 shortpath: /scratch/e14

@@ -84,8 +84,8 @@ NJGLOBAL = 200                  !
                                 ! y-direction in the physical domain. With STATIC_MEMORY_
                                 ! this is set in MOM_memory.h at compile time.
 
-NIPROC = 2
-NJPROC = 20
+NIPROC = 4
+NJPROC = 12
 
 ! === module MOM_hor_index ===
 ! Sets the horizontal array index types.
