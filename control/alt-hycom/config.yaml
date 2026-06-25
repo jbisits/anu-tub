@@ -1,6 +1,6 @@
 queue: normal
 ncpus: 48
-walltime: 24:00:00
+walltime: 16:00:00
 jobname: one-deg-tub-alt-hycom
 project: e14
 
