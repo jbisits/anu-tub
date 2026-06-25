@@ -1,0 +1,16 @@
+! HyCOM-like coordinate -- regrid to a target density, bounded by a minimum interface depth
+REGRIDDING_COORDINATE_MODE = "HYCOM1"
+
+! IMPROVED ISOPYCNAL FOLLOWING IN OCEAN INTERIOR
+! Set the dz profile to zstar and transition to constant dz after chosen depth
+ ALE_COORDINATE_CONFIG = "HYBRID:hycom1_75_zs2dztransition_100m.nc,sigma2,dz"
+
+! Initial conditions, used to initialise all runs with salinity, temperature and
+! thickness initialisation from a run of Andy and Angus. Pickup time is year 500.
+! NOTE: only use this to run for one month, to generate a new restart file in
+! each experiment then pickup from that.
+#override TS_CONFIG = "file"
+TS_FILE = "hycom_initial_conditions.nc"
+
+#override THICKNESS_CONFIG = "file"
+THICKNESS_FILE = "hycom_initial_conditions.nc"
