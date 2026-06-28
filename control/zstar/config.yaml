@@ -28,4 +28,6 @@ qsub_flags: -W umask=027
 restart_freq: 1  # use tidy_restarts.py instead
 
 userscripts:
-   archive: qsub sync_output_to_gdata.sh
+   archive:
+      - qsub sync_output_to_gdata.sh
+      - qsub sync_restarts_to_gdata.sh
