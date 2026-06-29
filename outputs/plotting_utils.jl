@@ -1,4 +1,8 @@
 # Utilities for plotting ANU-TUB output
+# NOTE: the only unlimited dimension is "time" which means this is the
+# variable that will be aggregated over. This means if multiple files,
+# i.e. a vector of filepaths, arepassed to and of the functions that open
+# they will open and correctly aggregate over the "time" dimension.
 """
     struct GeoCoords{V, M}
 Geographical coordinates for MOM6 output. Returned is `struct` with:
@@ -15,13 +19,11 @@ struct GeoCoords{V, M}
     zi :: V
     sf :: M
 end
-
 """
     function get_geo_coords(static_file::AbstractString)
 Get the geographical coordinates of the grid in `static_file`.
 """
 function get_geo_coords(static_file::AbstractString, vc_file::AbstractString)
-
     ds = NCDataset(static_file, maskingvalue = NaN)
 
     lonh = ds["geolon"][:, 1]
@@ -40,7 +42,107 @@ function get_geo_coords(static_file::AbstractString, vc_file::AbstractString)
     close(ds)
     return GeoCoords(lonh, lath, lonq, latq, zl, zi, depth)
 end
+"""
+    function model_state(catalogue::Dict)
+Compute the sst, zonal mean temperature, zonal mean velocity, barotropic streamfunction,
+overturning circulation in density and z space, vertical temperature gradient for each
+experiment in `catalogue`. Returned is `Dict`ionary with all the computed information for
+each experiment.
+"""
+function model_state(catalogue::Dict)
+    ms = Dict{String, Any}()
 
+    for (i, k) ∈ enumerate(keys(catalogue))
+
+        # coordinate info
+        crs = get_geo_coords(catalogue[k]["static"], catalogue[k]["vc"])
+        ds = NCDataset(catalogue[k]["monthlyz"])
+        zl = -ds["z_l"][:]
+        close(ds)
+
+        # temperature
+        ds = NCDataset(catalogue[k]["monthlyz"], maskingvalue = NaN)
+        sst = mean(ds["thetao"][:, :, 1, :], dims = 4)
+        sst = dropdims(sst, dims = (3, 4))
+        tzm = mean(nanmean(ds["thetao"][:, :, :, :], dims = 1), dims = 4)
+        tzm = dropdims(tzm, dims = (1, 4))
+        uzm = nanmean(ds["uo"][:, :, :, :], dims = (1, 4))
+        uzm = dropdims(uzm, dims = (1, 4))
+        close(ds)
+
+        ψb = barotropic_streamfunction(catalogue[k]["monthlyz"])
+
+        z_layer, z_ψo = overturning_circulation(catalogue[k]["monthlyz"], "z_l")
+        rho_layer, rho_ψo = overturning_circulation(catalogue[k]["monthlyrho2"], "rho2_l")
+
+        dθdz = dθ_dz(catalogue[k]["monthlyz"])
+        dθdz = dropdims(dθdz, dims = (1, 4))
+
+        find_nan = .!isnan.(0.5*(tzm[:, 1:end-1] .+ tzm[:, 2:end]))
+        mask = ifelse.(find_nan .== 0, NaN, 1)
+        dθdz .*= mask
+
+        ms[k] = Dict("crs" => crs, "zl" => zl, "sst" => sst, "tzm" => tzm, "uzm" => uzm, "ψb" => ψb,
+                     "dθdz" => dθdz, "zoverturning" => Dict("layer" => z_layer, "ψo" => z_ψo),
+                     "rhooverturning" => Dict("layer" => rho_layer, "ψo" => rho_ψo))
+    end
+
+    @info "Model state saved in dictionary."
+    return ms
+end
+"""
+    function variance_prodction_and_numerical_diffusivity(catalogue::Dict, output_grid::AbstractString)
+Compute the variance produciton and numerical diffusivity for the experiments in `catalogue`.
+Returned is a dictionary with all the computed fields.
+"""
+function variance_production_and_numerical_diffusivity(catalogue::Dict, output_grid::AbstractString)
+    ds = NCDataset(catalogue["zstar"]["static"])
+    replace!(wet, 0 => NaN)
+    close(ds)
+
+    vdnm = Dict{String, Any}()
+
+    for (i, k) ∈ enumerate(keys(catalogue))
+
+        # coordinate info
+        crs = get_geo_coords(catalogue[k]["static"], catalogue[k]["vc"])
+        ds = NCDataset(catalogue[k]["monthlyz"])
+        zl = -ds["z_l"][:]
+        close(ds)
+ 
+        # depth integrated and zonal mean advection scheme variance production
+        ∫vddz = depth_variance_dissipation(catalogue[k][output_grid])
+        ∫vddz = dropdims(∫vddz, dims = (3, 4))
+        ∫vddz .*= wet
+        zm_vd = zonal_variance_dissipation(catalogue[k][output_grid])
+        zm_vd = dropdims(zm_vd, dims = (1, 4))
+
+        # depth integrated and zonal mean numerical diffusivity
+        ∫nmdz = depth_numerical_mixing_diffusivity(catalogue[k][output_grid], catalogue[k]["static"])
+        ∫nmdz = abs.(∫nmdz)
+        replace!(∫nmdz, 0 => eps())
+        log_∫nmdz = log10.(∫nmdz)
+        zm_nm = zonal_numerical_mixing_diffusivity(catalogue[k][output_grid], catalogue[k]["static"])
+        zm_nm = abs.(zm_nm)
+        replace!(zm_nm, 0 => eps())
+        log_zm_nm = log10.(zm_nm)
+
+        # native grid vertical position from thickness
+        ds = NCDataset(catalogue[k]["monthly"], maskingvalue = NaN)
+        h = nanmean(ds["thkcello"][:, :, :, :], dim = 4)
+        close(ds)
+        h = nanmean(h, dim = 1)
+        ∫h = cumsum(h, dims = 2)
+ 
+        vdnm[k] = Dict("crs" => crs, "zl" => zl, "∫vd" => ∫vddz, "zm_vd" => zm_vd,
+                       "log_∫nm" => log_∫nmdz, "log_zm_nm" => log_zm_nm, "∫h" => ∫h)
+
+    end
+
+    @info "Variance production and numerical diffusivity saved in dictionary"
+    return vdnm
+
+end
 """
     function barotropic_streamfunction(output_file; timestamps = Colon(), ρ₀ = 1035)
 Compute the barotropic streamfunction from data saved in output_file.
