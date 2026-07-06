@@ -43,6 +43,38 @@ function get_geo_coords(static_file::AbstractString, vc_file::AbstractString)
     return GeoCoords(lonh, lath, lonq, latq, zl, zi, depth)
 end
 """
+    function vertical_grid(catalogue::Dict; lat_idx=80, time_idx=300)
+Get a vertical grid, temperature and potential density S-N transect along 'lat_idx' at `time_idx`.
+"""
+function vertical_grid(catalogue::Dict; lat_idx=80, time_idx=300)
+    vg = Dict{String, Any}()
+
+    for (i, k) ∈ enumerate(keys(catalogue))
+
+        crs = get_geo_coords(catalogue[k]["static"], catalogue[k]["vc"])
+
+        ds = NCDataset(catalogue[k]["monthly"], maskingvalue = NaN)
+        h = ds["thkcello"][lat_idx, :, :, time_idx] # middle of domain
+        t = ds["time"][time_idx]
+        close(ds)
+
+        ∫h = cumsum(h, dims = 2)
+
+        ds = NCDataset(catalogue[k]["monthlyz"], maskingvalue = NaN)
+        σ₂ = ds["rhopot2"][lat_idx, :, :, time_idx] # middle of domain
+        T = ds["thetao"][lat_idx, :, :, time_idx] # middle of domain
+        zl = -ds["z_l"][:]
+        close(ds)
+
+        vg[k] = Dict("h_transect" => h, "σ2_transect" => σ₂, "T_transect" => T, "lat_idx" => lat_idx,
+                     "time_idx" => time_idx,  "time_snapshot" => t, "zl" => zl)
+    end
+
+    @info "Vertical grid saved in dictionary."
+    return vg
+end
+
+"""
     function model_state(catalogue::Dict)
 Compute the sst, zonal mean temperature, zonal mean velocity, barotropic streamfunction,
 overturning circulation in density and z space, vertical temperature gradient for each
@@ -62,20 +94,20 @@ function model_state(catalogue::Dict)
 
         # temperature
         ds = NCDataset(catalogue[k]["monthlyz"], maskingvalue = NaN)
-        sst = mean(ds["thetao"][:, :, 1, :], dims = 4)
-        sst = dropdims(sst, dims = (3, 4))
+        sst = mean(ds["thetao"][:, :, 1, :], dims = 4)[:, :, 1, 1]
         tzm = mean(nanmean(ds["thetao"][:, :, :, :], dims = 1), dims = 4)
         tzm = dropdims(tzm, dims = (1, 4))
-        uzm = nanmean(ds["uo"][:, :, :, :], dims = (1, 4))
+        uzm = mean(nanmean(ds["uo"][:, :, :, :], dims = 1), dims = 4)
         uzm = dropdims(uzm, dims = (1, 4))
+        time_range = [ds["time"][1], ds["time"][end]]
         close(ds)
 
-        ψb = barotropic_streamfunction(catalogue[k]["monthlyz"])
+        ψb = barotropic_streamfunction(catalogue[k]["monthly"])
 
         z_layer, z_ψo = overturning_circulation(catalogue[k]["monthlyz"], "z_l")
         rho_layer, rho_ψo = overturning_circulation(catalogue[k]["monthlyrho2"], "rho2_l")
 
-        dθdz = dθ_dz(catalogue[k]["monthlyz"])
+        dθdz = dθ_dz(catalogue[k]["monthly"])
         dθdz = dropdims(dθdz, dims = (1, 4))
 
         find_nan = .!isnan.(0.5*(tzm[:, 1:end-1] .+ tzm[:, 2:end]))
@@ -84,7 +116,8 @@ function model_state(catalogue::Dict)
 
         ms[k] = Dict("crs" => crs, "zl" => zl, "sst" => sst, "tzm" => tzm, "uzm" => uzm, "ψb" => ψb,
                      "dθdz" => dθdz, "zoverturning" => Dict("layer" => z_layer, "ψo" => z_ψo),
-                     "rhooverturning" => Dict("layer" => rho_layer, "ψo" => rho_ψo))
+                     "rhooverturning" => Dict("layer" => rho_layer, "ψo" => rho_ψo), "time_range" => time_range
+                     )
     end
 
     @info "Model state saved in dictionary."
@@ -108,6 +141,7 @@ function variance_production_and_numerical_diffusivity(catalogue::Dict, output_g
         crs = get_geo_coords(catalogue[k]["static"], catalogue[k]["vc"])
         ds = NCDataset(catalogue[k]["monthlyz"])
         zl = -ds["z_l"][:]
+        time_range = [ds["time"][1], ds["time"][end]]
         close(ds)
  
         # depth integrated and zonal mean advection scheme variance production
@@ -135,7 +169,9 @@ function variance_production_and_numerical_diffusivity(catalogue::Dict, output_g
         ∫h = cumsum(h, dims = 2)
  
         vdnm[k] = Dict("crs" => crs, "zl" => zl, "∫vd" => ∫vddz, "zm_vd" => zm_vd,
-                       "log_∫nm" => log_∫nmdz, "log_zm_nm" => log_zm_nm, "∫h" => ∫h)
+                       "log_∫nm" => log_∫nmdz, "log_zm_nm" => log_zm_nm, "∫h" => ∫h,
+                       "time_range" => time_range
+                       )
 
     end
 
@@ -151,7 +187,7 @@ The required output is:
 By default, the `mean` over all timesteps in the file will be returned.
 Otherwise pass a range to take `mean` over or a single timestamp.
 """
-function barotropic_streamfunction(output_file::AbstractString;
+function barotropic_streamfunction(output_file::Vector{String};
                                    timestamps = Colon(),
                                    ρ₀ = 1035)
 
@@ -167,13 +203,13 @@ function barotropic_streamfunction(output_file::AbstractString;
     return mean(ψ, dims = 3)
 end
 """
-    function overturning_circulation(output_file::AbstractString, layer::AbstractString; timestamps = Colon(), ρ₀ = 1035)
+    function overturning_circulation(output_file::Vector{String}, layer::AbstractString; timestamps = Colon(), ρ₀ = 1035)
 Compute the overturning from data in `output_file`. The required output is:
 - `vmo` saved on the `rho2` (potential density referenced to 2000dbar) grid
 By default, the `mean` over all timesteps in the file will be returned.
 Otherwise pass a range to take `mean` over or a single timestamp.
 """
-function overturning_circulation(output_file::AbstractString, layer::AbstractString;
+function overturning_circulation(output_file::Vector{String}, layer::AbstractString;
                                  timestamps = Colon(),
                                  ρ₀ = 1035)
 
@@ -199,7 +235,7 @@ Compute temperature gradient from data in `output_file`. The required output is:
 By default, the `mean` over all timesteps in the file will be returned.
 Otherwise pass a range to take `mean` over or a single timestamp.
 """
-function dθ_dz(output_file::AbstractString; timestamps = Colon())
+function dθ_dz(output_file::Vector{String}; timestamps = Colon())
 
     ds = NCDataset(output_file, maskingvalue = NaN)
     θ = ds["thetao"][:, :, :, timestamps]
@@ -222,7 +258,7 @@ Return the zonal variance dissipation calculated as:
        -----------------------------------------
               Zonal sum of layer thickness
 """
-function zonal_variance_dissipation(output_file::AbstractString; 
+function zonal_variance_dissipation(output_file::Vector{String}; 
                                     timestamps = Colon())
 
     # take zonal sum and drop dimension when reading in
@@ -235,9 +271,9 @@ function zonal_variance_dissipation(output_file::AbstractString;
 end
 
 """
-    function depth_variance_dissipation(output_file::AbstractString, timestamps = Colon())
+    function depth_variance_dissipation(output_file::Vector{String}, timestamps = Colon())
 """
-function depth_variance_dissipation(output_file::AbstractString; timestamps = Colon())
+function depth_variance_dissipation(output_file::Vector{String}; timestamps = Colon())
     
     ds = NCDataset(output_file, maskingvalue = NaN)
     vd = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 3)  # °C²ms⁻¹
@@ -247,14 +283,14 @@ function depth_variance_dissipation(output_file::AbstractString; timestamps = Co
     return mean(vd, dims = 4)
 end
 """
-    function zonal_numerical_mixing_diffusivity(output_file::AbstractString; timestamps = Colon())
+    function zonal_numerical_mixing_diffusivity(output_file::Vector{String}; timestamps = Colon())
 Calculate the zonal numerical mixing as a diffusivity:
 
             zonal mean variance dissipation   # °C²s⁻¹
             -------------------------------
                     zonal mean |∇θ|²          # °C²m⁻²
 """
-function zonal_numerical_mixing_diffusivity(output_file::AbstractString, static_file::AbstractString; 
+function zonal_numerical_mixing_diffusivity(output_file::Vector{String}, static_file::AbstractString; 
                                             timestamps = Colon())
 
     ds = NCDataset(output_file, maskingvalue = NaN)
@@ -276,7 +312,7 @@ function zonal_numerical_mixing_diffusivity(output_file::AbstractString, static_
     return mean(κ_nm, dims = 3)[:, :, 1]
 end
 """
-    function depth_numerical_mixing(output_file::AbstractString, static_file::AbstractString; 
+    function depth_numerical_mixing(output_file::Vector{String}, static_file::AbstractString; 
                                    timestamps = Colon())
 Caclulate the depth integrated numerical mixing as diffusivity:
 
@@ -285,7 +321,7 @@ Caclulate the depth integrated numerical mixing as diffusivity:
                     depth mean |∇θ|²          # °C²m⁻²
 
 """
-function depth_numerical_mixing_diffusivity(output_file::AbstractString, static_file::AbstractString; 
+function depth_numerical_mixing_diffusivity(output_file::Vector{String}, static_file::AbstractString; 
                                             timestamps = Colon())
     
     ds = NCDataset(output_file, maskingvalue = NaN)
@@ -306,11 +342,11 @@ function depth_numerical_mixing_diffusivity(output_file::AbstractString, static_
     return mean(κ_nm, dims = 3)[:, :, 1]
 end
 """
-    function abs_temperature_gradient(output_file::AbstractString, static_file::AbstractString; 
+    function abs_temperature_gradient(output_file::Vector{String}, static_file::AbstractString; 
                                      timestamps = Colon())
 Return the squared norm of the temperature gradient at each grid cell.
 """
-function abs_temperature_gradient(output_file::AbstractString, static_file::AbstractString; 
+function abs_temperature_gradient(output_file::Vector{String}, static_file::AbstractString; 
                                  timestamps = Colon())
     
     ds = NCDataset(output_file, maskingvalue = NaN)
@@ -352,11 +388,11 @@ function abs_temperature_gradient(output_file::AbstractString, static_file::Abst
     return Δθx.^2 .+ Δθy.^2 .+ Δθz.^2
 end
 """
-    function vertical_sum(output_file::AbstractString; timestamps = Colon())
+    function vertical_sum(output_file::Vector{String}; timestamps = Colon())
 Sum the thickness weighted variance dissipation over the vertical dimension.
 Because of the thickness weighting this is a vertical integral.
 """
-function vertical_sum(output_file::AbstractString; timestamps = Colon())
+function vertical_sum(output_file::Vector{String}; timestamps = Colon())
 
     ds = NCDataset(output_file, maskingvalue = NaN)
     ∫nm = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dims = 3)
@@ -365,10 +401,10 @@ function vertical_sum(output_file::AbstractString; timestamps = Colon())
     return mean(∫nm, dims = 4)
 end
 """
-    function global_integral(output_file::AbstractString; timestamps = Colon())
+    function global_integral(output_file::Vector{String}; timestamps = Colon())
 Global integral of numerical mixing at each saved timestep.
 """
-function global_integral(output_file::AbstractString; timestamps = Colon())
+function global_integral(output_file::Vector{String}; timestamps = Colon())
     
     ds = NCDataset(output_file, maskingvalue = NaN)
     ∫nm = nansum(ds["T_advection_scheme_variance_production"][:, :, :, timestamps], dim = (1, 2, 3))
@@ -377,12 +413,12 @@ function global_integral(output_file::AbstractString; timestamps = Colon())
     return ∫nm
 end
 """
-    function interface_depth(output_file::AbstractString; lonslice = 80, timestamp = 1)
+    function interface_depth(output_file::Vector{String}; lonslice = 80, timestamp = 1)
 Find the height of the model interfaces by cumulatively summing the thickness field.
 By default, the slice from the middle of the longitude domain, and the initial timestamp,
 are used. **NOTE:** the returned interfaces are as depths so they are positive.
 """
-function inteface_depth(output_file::AbstractString; lonslice = 80, timestamp = 1)
+function inteface_depth(output_file::Vector{String}; lonslice = 80, timestamp = 1)
 
     ds = NCDataset(output_file, maskingvalue = NaN)
     h = ds["thkcello"][80, :, :, timestamp]
@@ -392,8 +428,8 @@ function inteface_depth(output_file::AbstractString; lonslice = 80, timestamp = 
     return int_depth
 end
 """
-    function interface_height(output_file::AbstractString; lonslice = 80, timestamp = 1
+    function interface_height(output_file::Vector{String}; lonslice = 80, timestamp = 1
 Return the interfeace_height which is the negative depth. This is just a convenience function.
 """
-interface_height(output_file::AbstractString; lonslice = 80, timestamp = 1) = 
+interface_height(output_file::Vector{String}; lonslice = 80, timestamp = 1) = 
     -inteface_depth(output_file; lonslice, timestamp)
