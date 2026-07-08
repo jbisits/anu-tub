@@ -15,13 +15,18 @@ Revise.includet("generate_tub_ics.jl")
 
 @info "Plotting and analysis environment setup!"
 
-expts = ("zstar", "hycom", "alt-hycom", "AG")
+expts = ("zstar", "AG", "hycom", "alt-hycom")
 # needs to be set manually because of the way the experiments have been run
 output = (
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)]),
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)])
+   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
+   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
+   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)]),
+   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)])
+   # susbset for testing
+   vcat(["output00"*i for i ∈ string.(2:3)]),
+   vcat(["output00"*i for i ∈ string.(2:3)]),
+   vcat(["output00"*i for i ∈ string.(2:3)]),
+   vcat(["output00"*i for i ∈ string.(2:3)]),
 )
 
 catalogue = Dict{String, Any}()
@@ -58,3 +63,12 @@ end
           - monthlyrho2
           - static
           - vertical coordinate"
+
+vgrids = joinpath(pwd(), "vertical_grids.jld2")
+model_states = joinpath(pwd(), "model_states.jld2")
+vp_and_nm = joinpath(pwd(), "vp_and_nm.jld2")
+
+@info "Analysis files available:
+      - vgrids: $(vgrids)
+      - model_states: $(model_states)
+      - vp_and_nm: $(vp_and_nm)"
