@@ -15,24 +15,20 @@ Revise.includet("generate_tub_ics.jl")
 
 @info "Plotting and analysis environment setup!"
 
-expts = ("zstar", "AG", "hycom", "alt-hycom")
+expts = ("zstar", "hycom", "alt-hycom", "AG")
 # needs to be set manually because of the way the experiments have been run
 output = (
-   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
-   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
-   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)]),
-   # vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)])
-   # susbset for testing
-   vcat(["output00"*i for i ∈ string.(2:3)]),
-   vcat(["output00"*i for i ∈ string.(2:3)]),
-   vcat(["output00"*i for i ∈ string.(2:3)]),
-   vcat(["output00"*i for i ∈ string.(2:3)]),
+   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
+   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
+   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)]),
+   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)])
 )
 
 catalogue = Dict{String, Any}()
 
 for (i, expt) ∈ enumerate(expts)
 
+   println(expt)
    expt_path = joinpath(pwd(), "anu-tub-nm-" * expt)
    odir = expt_path .* "/" .* output[i]
    daily = [glob("ocean_daily.nc", d)[1] for d ∈ odir]

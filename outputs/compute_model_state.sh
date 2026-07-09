@@ -2,8 +2,8 @@
 #PBS -q normalbw
 #PBS -P e14
 #PBS -l ncpus=1
-#PBS -l mem=256GB
-#PBS -l walltime=4:00:00
+#PBS -l mem=64GB
+#PBS -l walltime=12:00:00
 #PBS -l storage=gdata/e14+scratch/e14
 #PBS -l wd
 #PBS -M z5131023@unsw.edu.au
