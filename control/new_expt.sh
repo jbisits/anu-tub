@@ -25,16 +25,21 @@ new_perturbation_expt() {
     local expt_dir_name=$(basename "$new_expt")
     local copy_expt="${expt_dir_name:0:3}"
     local control_expt=""
+    local output_dir=""
 
     # match the new experiment to a control
     if [[ "$copy_expt" == "zst" ]]; then
 	control_expt="zstar"
+	output_dir="zstar"
     elif [[ "$copy_expt" == "hyc" ]]; then
 	control_expt="hycom1"
+	output_dir="hycom"
     elif [[ "$copy_expt" == "ada" ]]; then
 	control_expt="adapt"
+	output_dir="AG"
     elif [[ "$copy_expt" == "alt" ]]; then
 	control_expt="alt-hycom"
+	output_dir="alt-hycom"
     fi
 
     echo "Copying config.yaml and MOM_override from $control_expt to $new_expt"
@@ -54,18 +59,18 @@ new_perturbation_expt() {
     echo "Set up default inputs and update $control_expt to $new_expt where appropriate and add override if present"
     pushd "$new_expt" > /dev/null
     ./set_default.sh
-    sed -i "s|${control_expt}|${new_expt}|g" "$SYNC"
-    sed -i "s|${control_expt}|${new_expt}|g" "$CFG"
+    sed -i "s|${output_dir}|${new_expt}|g" "$SYNC"
+    sed -i "s|one-deg-tub-${output_dir,,}|${new_expt}|g" "$CFG"
     if [ -z "$override" ]; then
         echo "Nothing appended to MOM_override so expt is unchanged."
     else
         echo "appending ${override} to $MO"
-        sed -i "\$a \n#override ${override}" "$MO"
+        sed -i "\$a #override ${override}" "$MO"
     fi
     payu_setup_new_expt
     popd > /dev/null
 }
-# After a new experiment directory has been, set up a payu experiment.
+# After a new experiment directory has been, set up a payu experiment and run it.
 payu_setup_new_expt(){
     module use /g/data/vk83/modules
     module load payu
@@ -73,6 +78,11 @@ payu_setup_new_expt(){
     local work_dir_target=$(readlink "work")
     local exptname=$(basename "$work_dir_target")
     copy_restart_to_archive "$exptname"
+    git init
+    payu sweep
+    # payu setup
+    # payu sweep
+    # payu run
 }
 
 # Copy the most restart file based on the vertical coordinate to the `archive`.
