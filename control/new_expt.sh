@@ -64,7 +64,6 @@ new_perturbation_expt() {
     fi
     payu_setup_new_expt
     popd > /dev/null
-
 }
 # After a new experiment directory has been, set up a payu experiment.
 payu_setup_new_expt(){
@@ -78,7 +77,6 @@ payu_setup_new_expt(){
 
 # Copy the most restart file based on the vertical coordinate to the `archive`.
 copy_restart_to_archive() {
-
     local exptname=$(basename "$1")
     local archivepath="/scratch/e14/jb2381/mom6/archive/$exptname"
     local restart_path="/g/data/e14/jb2381/one-degree-anu-tub/restarts"
@@ -88,7 +86,7 @@ copy_restart_to_archive() {
 
     if [[ "$vc" == "zst" ]]; then
         verticalcoord="zstar"
-	restart_directory="restart050"
+	restart_directory="restart051"
     elif [[ "$vc" == "ada" ]]; then
         verticalcoord="AG"
 	restart_directory="restart051"
