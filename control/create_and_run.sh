@@ -6,7 +6,7 @@
 source "new_expt.sh"
 
 # Control experiments, PERTURBATION is appended to each base experiment name
-# OVERRIDE is appended to the MOM_override file in the new experiment
+# OVERRIDE is appended to the MOM_override file in the new PETURBATION control directory
 expts=("zstar" "hycom1" "alt-hycom" "adapt")
 PERTURBATION="-weaker-KD"
 OVERRIDE="KD = 1E-6"

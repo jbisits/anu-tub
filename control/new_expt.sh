@@ -80,9 +80,9 @@ payu_setup_new_expt(){
     copy_restart_to_archive "$exptname"
     git init
     payu sweep
-    # payu setup
-    # payu sweep
-    # payu run
+    payu setup
+    payu sweep
+    payu run
 }
 
 # Copy the most restart file based on the vertical coordinate to the `archive`.
