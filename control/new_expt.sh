@@ -62,12 +62,44 @@ new_perturbation_expt() {
         echo "appending ${override} to $MO"
         sed -i "\$a \n#override ${override}" "$MO"
     fi
+    payu_setup_new_expt
     popd > /dev/null
 
 }
-# After a new experiment directory has been, set up a payu experiment
-# payu_setup_new_expt(){
-#
-# module use /g/data/vk83/modules
-# module load payu
-# }
+# After a new experiment directory has been, set up a payu experiment.
+payu_setup_new_expt(){
+    module use /g/data/vk83/modules
+    module load payu
+    payu setup
+    local work_dir_target=$(readlink "work")
+    local exptname=$(basename "$work_dir_target")
+    copy_restart_to_archive "$exptname"
+}
+
+# Copy the most restart file based on the vertical coordinate to the `archive`.
+copy_restart_to_archive() {
+
+    local exptname=$(basename "$1")
+    local archivepath="/scratch/e14/jb2381/mom6/archive/$exptname"
+    local restart_path="/g/data/e14/jb2381/one-degree-anu-tub/restarts"
+    local vc="${exptname:0:3}"
+    local verticalcoord=""
+    local restart_directory=""
+
+    if [[ "$vc" == "zst" ]]; then
+        verticalcoord="zstar"
+	restart_directory="restart050"
+    elif [[ "$vc" == "ada" ]]; then
+        verticalcoord="AG"
+	restart_directory="restart051"
+    elif [[ "$vc" == "hyc" ]]; then
+        verticalcoord="hycom"
+	restart_directory="restart051"
+    elif [[ "$vc" == "alt" ]]; then
+        verticalcoord="alt-hycom"
+	restart_directory="restart050"
+    fi
+
+    echo "Copying ${restart_path}/${verticalcoord}/${restart_directory} to $archivepath"
+    cp -r "${restart_path}/${verticalcoord}/${restart_directory}" "$archivepath"
+}
