@@ -1,6 +1,8 @@
 "ANU_tub Sector"
 1 1 1 0 0 0
 
+"ocean_hour",             1, "hours",  1, "days", "time"
+"ocean_hour_z",           1, "hours",  1, "days", "time"
 "ocean_daily",            1, "days",   1, "days", "time"
 "ocean_month",            1, "months", 1, "days", "time"
 "ocean_month_z",          1, "months", 1, "days", "time"
@@ -49,60 +51,24 @@
 # "ocean_model",   "pbo",          "pbo",              "ocean_month",         "all", "mean", "none",2
 # "ocean_model",   "pso",          "pso",              "ocean_month",         "all", "mean", "none",2
 
- "ocean_model",   "thkcello",     "thkcello",         "ocean_month",        "all", "mean", "none",2
- "ocean_model_z",   "thkcello",     "thkcello",         "ocean_month_z",        "all", "mean", "none",2
- "ocean_model_rho2", "thkcello",  "thkcello",         "ocean_month_rho2",    "all", "mean", "none",2
+ "ocean_model",   "thkcello",     "thkcello",         "ocean_hour",        "all", "mean", "none",2
+ "ocean_model_z",   "thkcello",     "thkcello",         "ocean_hour_z",        "all", "mean", "none",2
 
- "ocean_model",   "zos",          "zos",              "ocean_month",         "all", "mean", "none",2
- "ocean_model",   "zos",          "zos",              "ocean_daily",         "all", "mean", "none",2
+ "ocean_model_z", "thetao",       "thetao",           "ocean_hour_z",       "all", "mean", "none",2  # if use pre-TEOS10
+ "ocean_model", "thetao",       "thetao",           "ocean_hour",       "all", "mean", "none",2  # if use pre-TEOS10
 
- "ocean_model_z", "thetao",       "thetao",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
- "ocean_model", "thetao",       "thetao",           "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
- "ocean_model",   "tos",          "tos",              "ocean_daily",         "all", "mean", "none",2
- "ocean_model",   "tob",          "tob",              "ocean_month",         "all", "mean", "none",2
+ "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_hour", "all", "mean", "none",2
 
- "ocean_model_z", "rhopot2",       "rhopot2",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
- "ocean_model", "rhopot2",       "rhopot2",           "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
-
- "ocean_model_z", "agessc",       "agessc",           "ocean_month_z",      "all", "mean", "none",2
- "ocean_model",   "mlotst",       "mlotst",           "ocean_month",         "all", "mean", "none",2
-
- "ocean_model_z","uo",           "uo",               "ocean_month_z",      "all", "mean", "none",2
- "ocean_model_z","vo",           "vo",               "ocean_month_z",      "all", "mean", "none",2
-
- "ocean_model","uo",           "uo",               "ocean_month",      "all", "mean", "none",2
- "ocean_model","vo",           "vo",               "ocean_month",      "all", "mean", "none",2
-
- "ocean_model","umo",       "umo",              "ocean_month",   "all", "mean", "none",2
- "ocean_model","vmo",       "vmo",              "ocean_month",   "all", "mean", "none",2
-
- "ocean_model_z","umo",       "umo",              "ocean_month_z",   "all", "mean", "none",2
- "ocean_model_z","vmo",       "vmo",              "ocean_month_z",   "all", "mean", "none",2
-
- "ocean_model_rho2","umo",       "umo",              "ocean_month_rho2",   "all", "mean", "none",2
- "ocean_model_rho2","vmo",       "vmo",              "ocean_month_rho2",   "all", "mean", "none",2
-
- "ocean_model",  "umo_2d",       "umo_2d",      "ocean_month",         "all", "mean", "none",2
- "ocean_model",  "vmo_2d",       "vmo_2d",      "ocean_month",         "all", "mean", "none",2
-
- "ocean_model",  "umo_2d",       "umo_2d",      "ocean_daily",         "all", "mean", "none",2
- "ocean_model",  "vmo_2d",       "vmo_2d",      "ocean_daily",         "all", "mean", "none",2
- 
- "ocean_model",  "hfds",            "hfds",             "ocean_month",        "all", "mean", "none",2  # total heat entering ocean surface 
- "ocean_model",  "tauuo",        "tauuo",            "ocean_month",        "all", "mean", "none",2
- "ocean_model",  "tauvo",        "tauvo",            "ocean_month",        "all", "mean", "none",2
-
- "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month", "all", "mean", "none",2
- "ocean_model_z", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month_z", "all", "mean", "none",2
-
- "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "diabatic_diff_temp_tendency", "diabatic_diff_temp_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_dfxy_conc_tendency", "T_dfxy_conc_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_advection_xy", "T_advection_xy", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_tendency_vert_remap", "T_tendency_vert_remap", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_tendency", "T_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_vardec", "T_vardec", "ocean_month", "all", "mean", "none",2
- "ocean_model", "tosq", "tosq", "ocean_month", "all", "mean", "none",2
+# Temperature related diagnostics that may be useful
+ "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "diabatic_diff_temp_tendency",    "diabatic_diff_temp_tendency",    "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_dfxy_conc_tendency",           "T_dfxy_conc_tendency",           "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_advection_xy",                 "T_advection_xy",                 "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_tendency_vert_remap",          "T_tendency_vert_remap",          "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_tendency",                     "T_tendency",                     "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_vardec",                       "T_vardec",                       "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "tosq",                           "tosq",                           "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_preale",                       "T_preale",                       "ocean_hour", "all", "mean", "none",2
 
 # ALE remapping
  "ocean_model", "h_preale",              "h_preale",              "ocean_hour", "all", "mean", "none",2
@@ -111,15 +77,6 @@
  "ocean_model", "e_preale",              "e_preale",              "ocean_hour", "all", "mean", "none",2
  "ocean_model", "dzRegrid",              "dzRegrid",              "ocean_hour", "all", "mean", "none",2
  "ocean_model", "e",                     "e",                     "ocean_hour", "all", "mean", "none",2
-
-# "ocean_model_z", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "diabatic_diff_temp_tendency",    "diabatic_diff_temp_tendency",    "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "T_dfxy_conc_tendency",           "T_dfxy_conc_tendency",           "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "T_advection_xy", "T_advection_xy", "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "T_tendency_vert_remap",          "T_tendency_vert_remap",          "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "T_tendency", "T_tendency", "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "T_vardec",                       "T_vardec",                       "ocean_month_z", "all", "mean", "none",2
-# "ocean_model_z", "tosq", "tosq", "ocean_month_z", "all", "mean", "none",2
 
 # Adaptive diagnostics
 #"ocean_model","adapt_w_adjust",     "adapt_w_adjust",     "adapt","all",.false.,"none",2
