@@ -101,8 +101,17 @@
  "ocean_model", "T_advection_xy", "T_advection_xy", "ocean_month", "all", "mean", "none",2
  "ocean_model", "T_tendency_vert_remap", "T_tendency_vert_remap", "ocean_month", "all", "mean", "none",2
  "ocean_model", "T_tendency", "T_tendency", "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_preale", "T_preale", "ocean_month", "all", "mean", "none",2
  "ocean_model", "T_vardec", "T_vardec", "ocean_month", "all", "mean", "none",2
  "ocean_model", "tosq", "tosq", "ocean_month", "all", "mean", "none",2
+
+# ALE remapping
+ "ocean_model", "h_preale",              "h_preale",              "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "vert_remap_h",          "vert_remap_h",          "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "vert_remap_h_tendency", "vert_remap_h_tendency", "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "e_preale",              "e_preale",              "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "dzRegrid",              "dzRegrid",              "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "e",                     "e",                     "ocean_hour", "all", "mean", "none",2
 
 # Adaptive diagnostics
 #"ocean_model","adapt_w_adjust",     "adapt_w_adjust",     "adapt","all",.false.,"none",2
