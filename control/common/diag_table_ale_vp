@@ -54,21 +54,43 @@
  "ocean_model",   "thkcello",     "thkcello",         "ocean_hour",        "all", "mean", "none",2
  "ocean_model_z",   "thkcello",     "thkcello",         "ocean_hour_z",        "all", "mean", "none",2
 
- "ocean_model_z", "thetao",       "thetao",           "ocean_hour_z",       "all", "mean", "none",2  # if use pre-TEOS10
- "ocean_model", "thetao",       "thetao",           "ocean_hour",       "all", "mean", "none",2  # if use pre-TEOS10
+ "ocean_model_z", "thetao",       "thetao",           "ocean_hour_z",     "all", "mean", "none",2  # if use pre-TEOS10
+ "ocean_model", "thetao",         "thetao",           "ocean_hour",       "all", "mean", "none",2  # if use pre-TEOS10
+ "ocean_model", "thetaoga",       "thetaoga",         "ocean_hour",       "all", "mean", "none",2  # if use pre-TEOS10
 
  "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_hour", "all", "mean", "none",2
 
-# Temperature related diagnostics that may be useful
+# Temperature diagnostics for looking at variance
  "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_hour", "all", "mean", "none",2
  "ocean_model", "diabatic_diff_temp_tendency",    "diabatic_diff_temp_tendency",    "ocean_hour", "all", "mean", "none",2
- "ocean_model", "T_dfxy_conc_tendency",           "T_dfxy_conc_tendency",           "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "temp_predia",                    "temp_predia",                    "ocean_hour", "all", "mean", "none",2
+# "ocean_model", "T_dfxy_conc_tendency",           "T_dfxy_conc_tendency",           "ocean_hour", "all", "mean", "none",2
  "ocean_model", "T_advection_xy",                 "T_advection_xy",                 "ocean_hour", "all", "mean", "none",2
  "ocean_model", "T_tendency_vert_remap",          "T_tendency_vert_remap",          "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "Th_tendency_vert_remap",         "Th_tendency_vert_remap",         "ocean_hour", "all", "mean", "none",2
  "ocean_model", "T_tendency",                     "T_tendency",                     "ocean_hour", "all", "mean", "none",2
  "ocean_model", "T_vardec",                       "T_vardec",                       "ocean_hour", "all", "mean", "none",2
  "ocean_model", "tosq",                           "tosq",                           "ocean_hour", "all", "mean", "none",2
  "ocean_model", "T_preale",                       "T_preale",                       "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_postale",                      "T_postale",                      "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_remap_variance_production",    "T_remap_variance_production",    "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_remap_variance_production_2d", "T_remap_variance_production_2d", "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_diffx_2d",                     "T_diffx_2d",                     "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_diffy_2d",                     "T_diffy_2d",                     "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "hfds",                           "hfds",                           "ocean_hour", "all", "mean", "none",2  # total heat entering ocean surface 
+ "ocean_model", "T_diabatic_diff_var_prod",       "T_diabatic_diff_var_prod",       "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_hordiff_variance_production",  "T_hordiff_variance_production",  "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_asvp_direct",  "T_asvp_direct",  "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_hord_direct",  "T_hord_direct",  "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_rvpd_direct",  "T_rvpd_direct",  "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "T_ddvp_direct",  "T_ddvp_direct",  "ocean_hour", "all", "mean", "none",2
+
+# Thickness diagnostics for looking at variance
+ "ocean_model", "boundary_forcing_h_tendency", "boundary_forcing_h_tendency", "ocean_hour", "all", "mean", "none",2
+# "ocean_model", "diabatic_diff_h_tendency",    "diabatic_diff_h_tendency",    "ocean_hour", "all", "mean", "none",2
+# "ocean_model", "diabatic_diff_h",             "diabatic_diff_h",             "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "boundary_forcing_h",          "boundary_forcing_h",          "ocean_hour", "all", "mean", "none",2
+ "ocean_model", "dynamics_h_tendency",          "dynamics_h_tendency",          "ocean_hour", "all", "mean", "none",2
 
 # ALE remapping
  "ocean_model", "h_preale",              "h_preale",              "ocean_hour", "all", "mean", "none",2

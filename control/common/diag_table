@@ -58,6 +58,7 @@
 
  "ocean_model_z", "thetao",       "thetao",           "ocean_month_z",       "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model", "thetao",       "thetao",           "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
+ "ocean_model", "thetaoga",       "thetaoga",         "ocean_month",       "all", "mean", "none",2  # if use pre-TEOS10
  "ocean_model",   "tos",          "tos",              "ocean_daily",         "all", "mean", "none",2
  "ocean_model",   "tob",          "tob",              "ocean_month",         "all", "mean", "none",2
 
@@ -94,23 +95,17 @@
 
  "ocean_model", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month", "all", "mean", "none",2
  "ocean_model_z", "T_advection_scheme_variance_production", "T_advection_scheme_variance_production", "ocean_month_z", "all", "mean", "none",2
+ "ocean_model", "T_diabatic_diff_var_prod",       "T_diabatic_diff_var_prod",       "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_hordiff_variance_production",  "T_hordiff_variance_production",  "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_remap_variance_production",    "T_remap_variance_production",    "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_forc_vp",                      "T_forc_vp",                      "ocean_month", "all", "mean", "none",2
+ "ocean_model", "T_tot_step_var",                 "T_tot_step_var",                 "ocean_month", "all", "mean", "none",2
 
- "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "diabatic_diff_temp_tendency", "diabatic_diff_temp_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_dfxy_conc_tendency", "T_dfxy_conc_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_advection_xy", "T_advection_xy", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_tendency_vert_remap", "T_tendency_vert_remap", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_tendency", "T_tendency", "ocean_month", "all", "mean", "none",2
- "ocean_model", "T_vardec", "T_vardec", "ocean_month", "all", "mean", "none",2
  "ocean_model", "tosq", "tosq", "ocean_month", "all", "mean", "none",2
-
-# ALE remapping
- "ocean_model", "h_preale",              "h_preale",              "ocean_hour", "all", "mean", "none",2
- "ocean_model", "vert_remap_h",          "vert_remap_h",          "ocean_hour", "all", "mean", "none",2
- "ocean_model", "vert_remap_h_tendency", "vert_remap_h_tendency", "ocean_hour", "all", "mean", "none",2
- "ocean_model", "e_preale",              "e_preale",              "ocean_hour", "all", "mean", "none",2
- "ocean_model", "dzRegrid",              "dzRegrid",              "ocean_hour", "all", "mean", "none",2
- "ocean_model", "e",                     "e",                     "ocean_hour", "all", "mean", "none",2
+# "ocean_model", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month", "all", "mean", "none",2
+# "ocean_model", "temp_predia",                    "temp_predia",                    "ocean_month", "all", "mean", "none",2
+# "ocean_model", "boundary_forcing_h_tendency", "boundary_forcing_h_tendency", "ocean_month", "all", "mean", "none",2
+# "ocean_model", "boundary_forcing_h",          "boundary_forcing_h",          "ocean_month", "all", "mean", "none",2
 
 # "ocean_model_z", "boundary_forcing_temp_tendency", "boundary_forcing_temp_tendency", "ocean_month_z", "all", "mean", "none",2
 # "ocean_model_z", "diabatic_diff_temp_tendency",    "diabatic_diff_temp_tendency",    "ocean_month_z", "all", "mean", "none",2
