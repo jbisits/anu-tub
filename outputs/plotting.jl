@@ -15,23 +15,24 @@ Revise.includet("generate_tub_ics.jl")
 
 @info "Plotting and analysis environment setup!"
 
-expts = ("zstar", "hycom", "alt-hycom", "AG")
-# needs to be set manually because of the way the experiments have been run
-output = (
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:5)]),
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)]),
-   vcat(["output00"*i for i ∈ string.(2:9)], ["output01"*i for i ∈ string.(0:3)])
+# the directories with the output need to be set manully because of saving
+expt_output = Dict(
+                   "zstar"              => ["output01"*i for i ∈ string.(6:9)],
+                   "hycom1"             => ["output01"*i for i ∈ string.(6:9)],
+                   "alt-hycom"          => ["output01"*i for i ∈ string.(4:7)],
+                   "adapt"              => ["output01"*i for i ∈ string.(4:7)],
+                   "zstar-weaker-KD"    => ["output01"*i for i ∈ string.(2:5)],
+                   "hycom1-weaker-KD"   => ["output01"*i for i ∈ string.(2:5)],
+                   "alt-hycom-weaker-KD"=> ["output01"*i for i ∈ string.(2:5)],
+                   "adapt-weaker-KD"    => ["output01"*i for i ∈ string.(2:5)]
 )
 
 catalogue = Dict{String, Any}()
 
-for (i, expt) ∈ enumerate(expts)
+for (i, expt) ∈ enumerate(keys(expt_output))
 
-   println(expt)
    expt_path = joinpath(pwd(), "anu-tub-nm-" * expt)
-   odir = expt_path .* "/" .* output[i]
-   daily = [glob("ocean_daily.nc", d)[1] for d ∈ odir]
+   odir = expt_path .* "/" .* expt_output[expt]
    monthly = [glob("ocean_month.nc", d)[1] for d ∈ odir]
    monthlyz = [glob("ocean_month_z.nc", d)[1] for d ∈ odir]
    monthlyrho2 = [glob("ocean_month_rho2.nc", d)[1] for d ∈ odir]
@@ -39,7 +40,6 @@ for (i, expt) ∈ enumerate(expts)
    vc = joinpath(odir[end], "Vertical_coordinate.nc")
 
    catalogue[expt] = Dict("path" => expt_path,
-                          "daily" => daily,
                           "monthly" => monthly,
                           "monthlyrho2" => monthlyrho2,
                           "monthlyz" => monthlyz,
@@ -47,24 +47,19 @@ for (i, expt) ∈ enumerate(expts)
                           "vc" => vc)
 end
 
-@info "Experiments in the catalogue are:
-       - $(expts[1])
-       - $(expts[2])
-       - $(expts[3])
-       - $(expts[4])
-       Available data is:
-          - daily
-          - monthly
-          - monthlyz
-          - monthlyrho2
-          - static
-          - vertical coordinate"
+@info "Experiments in the catalogue are: $(keys(expt_output))
+      Available data is:
+      - monthly
+      - monthlyz
+      - monthlyrho2
+      - static
+      - vertical coordinate"
 
 vgrids = joinpath(pwd(), "vertical_grids.jld2")
 model_states = joinpath(pwd(), "model_states.jld2")
-vp_and_nm = joinpath(pwd(), "vp_and_nm.jld2")
+vp025 = joinpath(pwd(), "variance_production_025.jld2")
 
 @info "Analysis files available:
       - vgrids: $(vgrids)
       - model_states: $(model_states)
-      - vp_and_nm: $(vp_and_nm)"
+      - variance_production_025: $(vp025)"

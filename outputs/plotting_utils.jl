@@ -236,13 +236,13 @@ function dθ_dz(output_file::Vector{String}, dimensions)
     return ΔΘ_Δh
 end
 """
-    function variance_prodction_and_numerical_diffusivity(catalogue::Dict, output_grid::AbstractString)
+    function variance_prodction(catalogue::Dict, output_grid::AbstractString)
 Compute the variance produciton and numerical diffusivity for the experiments in `catalogue`.
 Returned is a dictionary with all the computed fields.
 """
-function variance_production_and_numerical_diffusivity(catalogue::Dict, output_grid::AbstractString)
+function variance_production(catalogue::Dict, output_grid::AbstractString)
 
-    vdnm = Dict{String, Any}()
+    full_vp = Dict{String, Any}()
 
     for (i, k) ∈ enumerate(keys(catalogue))
 
@@ -254,9 +254,156 @@ function variance_production_and_numerical_diffusivity(catalogue::Dict, output_g
         time_range = [ds["time"][1], ds["time"][end]]
         close(ds)
  
-        # depth integrated and zonal mean advection scheme variance production
-        ∫vddz = depth_variance_production(catalogue[k][output_grid], dimensions)
-        zm_vd = zonal_variance_production(catalogue[k][output_grid], dimensions)
+        vp = Dict{String, Any}()
+        # grid cell variance production diagnostics
+        local_variance_variables = ("T_advection_scheme_variance_production", "T_remap_variance_production",
+                                    "T_diabatic_diff_var_prod", "T_hordiff_variance_production")
+        variance_naming = ["asvp", "remap", "diabatic", "hordiff"]
+
+        # global mean time series of grid cell variance production diagnostics
+        for (i, var) ∈ enumerate(local_variance_variables)
+            _vp = global_mean_variance_production(catalogue[k][output_grid], catalogue[k]["static"], var, dimensions)
+            vp[variance_naming[i]*"_global"] = _vp
+        end
+        # depth and zonal time mean of grid cell variance production diagnostics
+        for (i, var) ∈ enumerate(local_variance_variables)
+            _vp = depth_mean_variance_production(catalogue[k][output_grid], var, dimensions)
+            vp[variance_naming[i]*"_depth_mean"] = _vp
+            _vp = zonal_mean_variance_production(catalogue[k][output_grid], var, dimensions)
+            vp[variance_naming[i]*"_zonal_mean"] = _vp
+        end
+
+        # variance budget terms, these are only available for the zstar expt at this stage
+        if k == "zstar"
+            variance_budget_terms = ("T_forc_vp", "T_tot_step_var")
+            variance_budget_names = ["T_forc_vp", "T_tot_step_var"]
+            for (i, var) ∈ enumerate(variance_budget_terms)
+                _vp = global_mean_variance_production(catalogue[k][output_grid], catalogue[k]["static"], var, dimensions)
+                vp[variance_budget_names[i]*"_global"] = _vp
+            end
+            # depth and zonal time mean of grid cell variance production diagnostics
+            for (i, var) ∈ enumerate(variance_budget_terms)
+                _vp = depth_mean_variance_production(catalogue[k][output_grid], var, dimensions)
+                vp[variance_budget_names[i]*"_depth_mean"] = _vp
+                _vp = zonal_mean_variance_production(catalogue[k][output_grid], var, dimensions)
+                vp[variance_budget_names[i]*"_zonal_mean"] = _vp
+            end
+        end
+
+        ∫h = zonal_mean_thickness(catalogue[k]["monthly"], dimensions)
+        vp["crs"] = crs
+        vp["z_l"] = zl
+        vp["∫h"] = ∫h
+        vp["time_range"] = time_range
+        vp["output_grid"] = output_grid
+
+        full_vp[k] = vp
+    end
+
+    return full_vp
+
+end
+"""
+    function depth_mean_variance_production(output_file::Vector{String}, variance_variable::AbstractString, dimensions)
+"""
+function depth_mean_variance_production(output_file::Vector{String}, variance_variable::AbstractString, dimensions)
+
+    # extract the dimensions
+    nx = dimensions["xh"]
+    ny = dimensions["yh"]
+    nz = dimensions["z_l"]
+    nt = dimensions["time"]
+    # Array for time mean depth integrated variance production
+    dummy = zeros(Float64, nx, ny)
+    vd = zeros(Float64, nx, ny)
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    for t ∈ 1:nt
+        dummy[:, :] .= nansum(ds[variance_variable][:, :, :, t], dim = 3)  # °C²ms⁻¹
+        dummy[:, :] ./= nansum(ds["thkcello"][:, :, :, t], dim = 3)        # °C²s⁻¹
+        vd[:, :] .+= dummy[:, :]
+    end
+    close(ds)
+    vd ./= nt
+ 
+    return vd
+end
+"""
+    function zonal_mean_variance_production(output_file, variance_variable::AbstractString, dimensions)
+Return the zonal variance dissipation calculated as:
+
+        Zonal sum of numerical mixing diagnostic
+       -----------------------------------------
+              Zonal sum of layer thickness
+"""
+function zonal_mean_variance_production(output_file::Vector{String}, variance_variable::AbstractString, dimensions)
+
+    # extract the dimensions
+    nx = dimensions["xh"]
+    ny = dimensions["yh"]
+    nz = dimensions["z_l"]
+    nt = dimensions["time"]
+    # Array for time mean depth integrated variance dissipation
+    dummy = zeros(Float64, ny, nz)
+    vd = zeros(Float64, ny, nz)
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    for t ∈ 1:nt
+        dummy[:, :] .= nansum(ds[variance_variable][:, :, :, t], dim = 1)  # °C²ms⁻¹
+        dummy[:, :] ./= nansum(ds["thkcello"][:, :, :, t], dim = 1)        # °C²s⁻¹
+        vd[:, :] .+= dummy[:, :]
+    end
+    close(ds)
+    vd ./= nt
+
+    return vd
+end
+"""
+    function global_mean_variance_production(catalogue[k][output_grid], static_file, variance_variable, dimensions)
+Compute the globally integrated variance production for `variance_variable`.
+"""
+function global_mean_variance_production(output_file::Vector{String}, static_file::AbstractString, variance_variable::AbstractString, dimensions)
+
+    ds = NCDataset(static_file, maskingvalue = NaN)
+    dA = ds["areacello"][:, :]
+    wet = ds["wet"][:, :]
+    close(ds)
+
+    ds = NCDataset(output_file, maskingvalue = NaN)
+    nt = ds.dim["time"]
+    ∫c²dV = zeros(nt)
+    for t ∈ 1:nt
+        vp = ds[variance_variable][:, :, :, t]
+        dV = ds["thkcello"][:, :, :, t]
+        for k ∈ axes(dV, 3)
+            dV[:, :, k] .*= dA
+            dV[:, :, k] .*= wet
+            if variance_variable != "T_hordiff_variance_production"
+                vp[:, :, k] .*= dA
+                vp[:, :, k] .*= wet
+            end
+        end
+        ∫c²dV[t] = nansum(vp) ./ nansum(dV)
+    end
+    close(ds)
+
+    return ∫c²dV
+end
+"""
+    function numerical_diffusivity(catalogue::Dict, output_grid::AbstractString)
+Compute the numerical diffusivity for the experiments in `catalogue`.
+Returned is a dictionary with all the computed fields.
+"""
+function numerical_diffusivity(catalogue::Dict, output_grid::AbstractString)
+    vdnm = Dict{String, Any}()
+
+    for (i, k) ∈ enumerate(keys(catalogue))
+
+        # coordinate info
+        crs = get_geo_coords(catalogue[k]["static"], catalogue[k]["vc"])
+        ds = NCDataset(catalogue[k]["monthlyz"])
+        zl = -ds["z_l"][:]
+        dimensions = ds.dim
+        time_range = [ds["time"][1], ds["time"][end]]
+        close(ds)
 
         # depth integrated and zonal mean numerical diffusivity
         ∫nmdz = depth_numerical_mixing_diffusivity(catalogue[k][output_grid], catalogue[k]["static"], dimensions)
@@ -270,8 +417,7 @@ function variance_production_and_numerical_diffusivity(catalogue::Dict, output_g
 
         ∫h = zonal_mean_thickness(catalogue[k]["monthly"], dimensions)
 
-        vdnm[k] = Dict("crs" => crs, "z_l" => zl, "∫vd" => ∫vddz, "zm_vd" => zm_vd,
-                       "log_∫nm" => log_∫nmdz, "log_zm_nm" => log_zm_nm, "∫h" => ∫h,
+        vdnm[k] = Dict("log_∫nm" => log_∫nmdz, "log_zm_nm" => log_zm_nm, "∫h" => ∫h,
                        "time_range" => time_range, "output_grid" => output_grid
                        )
 
@@ -279,59 +425,6 @@ function variance_production_and_numerical_diffusivity(catalogue::Dict, output_g
 
     return vdnm
 
-end
-"""
-    function depth_variance_production(output_file::Vector{String}, dimensions)
-"""
-function depth_variance_production(output_file::Vector{String}, dimensions)
-
-    # extract the dimensions
-    nx = dimensions["xh"]
-    ny = dimensions["yh"]
-    nz = dimensions["z_l"]
-    nt = dimensions["time"]
-    # Array for time mean depth integrated variance production
-    dummy = zeros(Float64, nx, ny)
-    vd = zeros(Float64, nx, ny)
-    ds = NCDataset(output_file, maskingvalue = NaN)
-    for t ∈ 1:nt
-        dummy[:, :] .= nansum(ds["T_advection_scheme_variance_production"][:, :, :, t], dim = 3)  # °C²ms⁻¹
-        dummy[:, :] ./= nansum(ds["thkcello"][:, :, :, t], dim = 3)                               # °C²s⁻¹
-        vd[:, :] .+= dummy[:, :]
-    end
-    close(ds)
-    vd ./= nt
- 
-    return vd
-end
-"""
-    function zonal_variance_production(output_file; timestamps = Colon())
-Return the zonal variance dissipation calculated as:
-
-        Zonal sum of numerical mixing diagnostic
-       -----------------------------------------
-              Zonal sum of layer thickness
-"""
-function zonal_variance_production(output_file::Vector{String}, dimensions)
-
-    # extract the dimensions
-    nx = dimensions["xh"]
-    ny = dimensions["yh"]
-    nz = dimensions["z_l"]
-    nt = dimensions["time"]
-    # Array for time mean depth integrated variance dissipation
-    dummy = zeros(Float64, ny, nz)
-    vd = zeros(Float64, ny, nz)
-    ds = NCDataset(output_file, maskingvalue = NaN)
-    for t ∈ 1:nt
-        dummy[:, :] .= nansum(ds["T_advection_scheme_variance_production"][:, :, :, t], dim = 1)  # °C²ms⁻¹
-        dummy[:, :] ./= nansum(ds["thkcello"][:, :, :, t], dim = 1)                              # °C²s⁻¹
-        vd[:, :] .+= dummy[:, :]
-    end
-    close(ds)
-    vd ./= nt
-
-    return vd
 end
 """
     function zonal_numerical_mixing_diffusivity(output_file::Vector{String}, static_file, dimensions)
@@ -363,8 +456,8 @@ function zonal_numerical_mixing_diffusivity(output_file::Vector{String}, static_
         dummy[:, :] ./= nansum(ds["thkcello"][:, :, :, t], dim = 1)                              # °C²s⁻¹
         vd[:, :] .= dummy[:, :]
         # interpolate so same size as derivative
-        interp_vd = 0.5 * (vd[:, 1:end-1, :] .+ vd[:, 2:end, :])
-        interp_vd = 0.5 * (interp_vd[1:end-1, :, :] .+ interp_vd[2:end, :, :])
+        interp_vd = 0.5 * (vd[:, 1:end-1] .+ vd[:, 2:end])
+        interp_vd = 0.5 * (interp_vd[1:end-1, :] .+ interp_vd[2:end, :])
         # compute temperature norm squared
         h = ds["thkcello"][:, :, :, t]
         Θ = ds["thetao"][:, :, :, t]
