@@ -236,11 +236,11 @@ function dθ_dz(output_file::Vector{String}, dimensions)
     return ΔΘ_Δh
 end
 """
-    function variance_prodction(catalogue::Dict, output_grid::AbstractString)
-Compute the variance produciton and numerical diffusivity for the experiments in `catalogue`.
-Returned is a dictionary with all the computed fields.
+    function variance_prodction(catalogue::Dict, output_grid::AbstractString, resolution::Number)
+Compute the variance produciton (depth and zonal time mean and globally integrated time series) for the 
+experiments in `catalogue`. Returned is a dictionary with all the computed fields.
 """
-function variance_production(catalogue::Dict, output_grid::AbstractString)
+function variance_production(catalogue::Dict, output_grid::AbstractString, resolution::Number)
 
     full_vp = Dict{String, Any}()
 
@@ -273,10 +273,10 @@ function variance_production(catalogue::Dict, output_grid::AbstractString)
             vp[variance_naming[i]*"_zonal_mean"] = _vp
         end
 
-        # variance budget terms, these are only available for the zstar expt at this stage
-        if k == "zstar"
+        # variance budget terms, these are only available for the 0.25 degree zstar expt (at this stage)
+        if k == "zstar" && resolution == 0.25
             variance_budget_terms = ("T_forc_vp", "T_tot_step_var")
-            variance_budget_names = ["T_forc_vp", "T_tot_step_var"]
+            variance_budget_names = ["forcing", "total"]
             for (i, var) ∈ enumerate(variance_budget_terms)
                 _vp = global_mean_variance_production(catalogue[k][output_grid], catalogue[k]["static"], var, dimensions)
                 vp[variance_budget_names[i]*"_global"] = _vp
