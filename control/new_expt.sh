@@ -25,21 +25,16 @@ new_perturbation_expt() {
     local expt_dir_name=$(basename "$new_expt")
     local copy_expt="${expt_dir_name:0:3}"
     local control_expt=""
-    local output_dir=""
 
     # match the new experiment to a control
     if [[ "$copy_expt" == "zst" ]]; then
 	control_expt="zstar"
-	output_dir="zstar"
     elif [[ "$copy_expt" == "hyc" ]]; then
 	control_expt="hycom1"
-	output_dir="hycom"
     elif [[ "$copy_expt" == "ada" ]]; then
 	control_expt="adapt"
-	output_dir="AG"
     elif [[ "$copy_expt" == "alt" ]]; then
 	control_expt="alt-hycom"
-	output_dir="alt-hycom"
     fi
 
     echo "Copying config.yaml and MOM_override from $control_expt to $new_expt"
@@ -59,8 +54,8 @@ new_perturbation_expt() {
     echo "Set up default inputs and update $control_expt to $new_expt where appropriate and add override if present"
     pushd "$new_expt" > /dev/null
     ./set_default.sh
-    sed -i "s|${output_dir}|${new_expt}|g" "$SYNC"
-    sed -i "s|one-deg-tub-${output_dir,,}|${new_expt}|g" "$CFG"
+    sed -i "s|${control_expt}|${new_expt}|g" "$SYNC"
+    sed -i "s|one-deg-tub-${control_expt,,}|${new_expt}|g" "$CFG"
     if [ -z "$override" ]; then
         echo "Nothing appended to MOM_override so expt is unchanged."
     else
@@ -98,10 +93,10 @@ copy_restart_to_archive() {
         verticalcoord="zstar"
 	restart_directory="restart051"
     elif [[ "$vc" == "ada" ]]; then
-        verticalcoord="AG"
+        verticalcoord="adapt"
 	restart_directory="restart051"
     elif [[ "$vc" == "hyc" ]]; then
-        verticalcoord="hycom"
+        verticalcoord="hycom1"
 	restart_directory="restart051"
     elif [[ "$vc" == "alt" ]]; then
         verticalcoord="alt-hycom"
