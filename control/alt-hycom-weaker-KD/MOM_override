@@ -1,0 +1,8 @@
+! HyCOM-like coordinate -- regrid to a target density, bounded by a minimum interface depth
+REGRIDDING_COORDINATE_MODE = "HYCOM1"
+
+! IMPROVED ISOPYCNAL FOLLOWING IN OCEAN INTERIOR
+! Set the dz profile to zstar and transition to constant dz after chosen depth
+ ALE_COORDINATE_CONFIG = "HYBRID:hycom1_75_zs2dztransition_100m.nc,sigma2,dz"
+
+#override KD = 1E-6
